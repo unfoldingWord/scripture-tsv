@@ -4,46 +4,51 @@ import { TextField } from '@material-ui/core'
 
 const NewTsvForm = ({ newRow, setNewRow }) => {
   const changeRowValue = (event, indexToChange) => {
-    setNewRow(prevRows =>
-      prevRows.map((item, index) =>
+    setNewRow(prevRow =>
+      prevRow.map((item, index) =>
         index === indexToChange ? event.target.value : item
       )
     )
   }
 
-  return columnNames.map((name, i) => {
-    let text = ''
+  const renderedRowInputs = Object.entries(newRow).map(
+    ([columnName, value]) => {
+      let text = ''
 
-    // by default...
-    text = (
-      <TextField
-        key={i}
-        defaultValue={newRow[i]}
-        label={name}
-        margin="normal"
-        onChange={event => changeRowValue(event, i)}
-        fullWidth
-      />
-    )
+      // by default...
+      text = (
+        <TextField
+          key={columnName}
+          defaultValue={value}
+          label={columnName}
+          margin="normal"
+          onChange={event => changeRowValue(event, i)}
+          fullWidth
+        />
+      )
 
-    // if ( state.columnsFilterOptions[i] && state.columnsFilterOptions[i].length > 0 ) {
-    //   text = (
-    //     <Autocomplete
-    //       key={i}
-    //       options={state.columnsFilterOptions[i]}
-    //       value={newRow[i]}
-    //       onChange={(event, newValue) => {
-    //         newRow[i] = newValue === null ? '' : newValue;
-    //       }}
-    //       onInputChange={(event, newValue) => {
-    //         newRow[i] = newValue;
-    //       }}
-    //       renderInput={(params) => <TextField {...params} label={name} margin="normal" />}
-    //       freeSolo={true}
-    //     />
-    //   );
-    // }
-  })
+      return text
+    }
+  )
+
+  // if ( state.columnsFilterOptions[i] && state.columnsFilterOptions[i].length > 0 ) {
+  //   text = (
+  //     <Autocomplete
+  //       key={i}
+  //       options={state.columnsFilterOptions[i]}
+  //       value={newRow[i]}
+  //       onChange={(event, newValue) => {
+  //         newRow[i] = newValue === null ? '' : newValue;
+  //       }}
+  //       onInputChange={(event, newValue) => {
+  //         newRow[i] = newValue;
+  //       }}
+  //       renderInput={(params) => <TextField {...params} label={name} margin="normal" />}
+  //       freeSolo={true}
+  //     />
+  //   );
+  // }
+  return renderedRowInputs
 }
 
 NewTsvForm.propTypes = {}
