@@ -8,7 +8,7 @@ const AddTsvButton = ({ title = 'Add Tsv Row', onClick, style = {} }) => {
     <Tooltip title={title} arrow>
       <span>
         <IconButton
-          key='add-tsv'
+          key="add-tsv"
           onClick={onClick}
           aria-label={title}
           style={{ padding: '8px', ...style }}
