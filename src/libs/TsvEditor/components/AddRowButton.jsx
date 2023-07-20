@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { IconButton, Tooltip } from '@material-ui/core'
 import { AddCircleOutline } from '@material-ui/icons'
 
-const AddTsvButton = ({ title = 'Add Tsv Row', onClick, style = {} }) => {
+const AddRowButton = ({ title = 'Add Tsv Row', onClick, style = {} }) => {
   return (
     <Tooltip title={title} arrow>
       <span>
@@ -20,7 +20,7 @@ const AddTsvButton = ({ title = 'Add Tsv Row', onClick, style = {} }) => {
   )
 }
 
-AddTsvButton.propTypes = {
+AddRowButton.propTypes = {
   /** title that displays on tooltip when button is hovered */
   title: PropTypes.string,
   /** callback function when user click on the add button */
@@ -29,4 +29,4 @@ AddTsvButton.propTypes = {
   style: PropTypes.object,
 }
 
-export default AddTsvButton
+export default AddRowButton

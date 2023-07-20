@@ -1,16 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { TextField } from '@material-ui/core'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 
-const NewTsvForm = ({ newRow, setNewRow }) => {
-  const changeRowValue = (event, indexToChange) => {
-    setNewRow(prevRow =>
-      prevRow.map((item, index) =>
-        index === indexToChange ? event.target.value : item
-      )
-    )
-  }
-
+const NewTsvForm = ({ newRow, changeRowValue, columnsFilterOptions }) => {
   const renderedRowInputs = Object.entries(newRow).map(
     ([columnName, value]) => {
       let text = ''
@@ -22,32 +15,35 @@ const NewTsvForm = ({ newRow, setNewRow }) => {
           defaultValue={value}
           label={columnName}
           margin="normal"
-          onChange={event => changeRowValue(event, i)}
+          onChange={event => changeRowValue(columnName, event.target.value)}
           fullWidth
         />
       )
+
+      if (!!columnsFilterOptions[columnName]?.length) {
+        text = (
+          <Autocomplete
+            key={columnName}
+            options={columnsFilterOptions[columnName]}
+            value={value}
+            onChange={(event, newValue) => {
+              changeRowValue(columnName, newValue === null ? '' : newValue)
+            }}
+            onInputChange={(event, newValue) => {
+              changeRowValue(columnName, newValue)
+            }}
+            renderInput={params => (
+              <TextField {...params} label={columnName} margin="normal" />
+            )}
+            freeSolo={true}
+          />
+        )
+      }
 
       return text
     }
   )
 
-  // if ( state.columnsFilterOptions[i] && state.columnsFilterOptions[i].length > 0 ) {
-  //   text = (
-  //     <Autocomplete
-  //       key={i}
-  //       options={state.columnsFilterOptions[i]}
-  //       value={newRow[i]}
-  //       onChange={(event, newValue) => {
-  //         newRow[i] = newValue === null ? '' : newValue;
-  //       }}
-  //       onInputChange={(event, newValue) => {
-  //         newRow[i] = newValue;
-  //       }}
-  //       renderInput={(params) => <TextField {...params} label={name} margin="normal" />}
-  //       freeSolo={true}
-  //     />
-  //   );
-  // }
   return renderedRowInputs
 }
 

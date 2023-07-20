@@ -101,3 +101,53 @@ const randomId = ({ length }) => {
 return id;
 };
 
+export const getColumnsFilterOptions = ({ columnNames, tsvs }) => {
+  const _columnsFilterOptions = {};
+
+  Object.entries(tsvs).forEach(([chapterNum, verses]) => {
+    Object.entries(verses).forEach(([verseNum, items]) => {
+      items.forEach(item => {
+        columnNames.forEach(columnName => {
+          const value = item[columnName]
+          if (value) {
+            if (!_columnsFilterOptions[columnName]) {
+              _columnsFilterOptions[columnName] = new Set();
+            }
+  
+            if (!_columnsFilterOptions[columnName].has(value)) {
+              _columnsFilterOptions[columnName].add(value);
+            }
+          }
+        })
+      })
+    })
+  })
+
+  columnNames.forEach(columnName => {
+    if (_columnsFilterOptions[columnName]) {
+      _columnsFilterOptions[columnName] = [..._columnsFilterOptions[columnName]].sort(sortSKU);// sort chapters and verses
+    }
+  });
+  
+  return _columnsFilterOptions;
+};
+
+function sortSKU( a, b ) {
+  var aParts = a.split( ':' ),
+    bParts = b.split( ':' ),
+    partCount = aParts.length,
+    i;
+
+  if ( aParts.length !== bParts.length ) {
+    return aParts.length - bParts.length;
+  }
+
+  for ( i = 0 ; i < partCount ; i++ ) {
+    if ( aParts[i] !== bParts[i] ) {
+      return +aParts[i] - +bParts[i];
+    }
+  }
+  //Exactly the same
+  return 0;
+}
+

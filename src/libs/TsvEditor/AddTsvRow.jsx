@@ -1,23 +1,42 @@
-import React, { useState, useEffect } from 'react'
-import AddTsvButton from './components/AddTsvButton'
-import AddTsvDialog from './components/AddTsvDialog'
+import React from 'react'
+import useAddTsv from './hooks/useAddTsv'
+import AddRowButton from './components/AddRowButton'
+import AddRowDialog from './components/AddRowDialog'
 import NewTsvForm from './components/NewTsvForm'
-import { rowGenerate } from './utils/tsvHelpers'
 import { titusTsvs } from './assets/titusTsvs'
 
 const chapter = 1
 const verse = 1
 const itemIndex = 1
+const columnsFilter = ['Reference', 'Chapter', 'Verse', 'SupportReference']
 
 const AddTsvRow = () => {
-  const [dialogOpen, setDialogOpen] = useState(true)
-  const [newRow, setNewRow] = useState(
-    rowGenerate(titusTsvs, chapter, verse, itemIndex)
+  const {
+    isAddRowDialogOpen,
+    openAddRowDialog,
+    closeAddRowDialog,
+    newRow,
+    changeRowValue,
+    columnsFilterOptions,
+  } = useAddTsv({ tsvs: titusTsvs, chapter, verse, itemIndex, columnsFilter })
+
+  const tsvForm = (
+    <NewTsvForm
+      newRow={newRow}
+      changeRowValue={changeRowValue}
+      columnsFilterOptions={columnsFilterOptions}
+    />
   )
 
   return (
     <div>
-      <NewTsvForm newRow={newRow} setNewRow={setNewRow} />
+      <AddRowButton onClick={openAddRowDialog} />
+      <AddRowDialog
+        open={isAddRowDialogOpen}
+        onClose={closeAddRowDialog}
+        onSubmit={closeAddRowDialog}
+        tsvForm={tsvForm}
+      />
     </div>
   )
 }
