@@ -1,32 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import isEqual from 'lodash.isequal'
-import { rowGenerate, getColumnsFilterOptions } from '../utils/tsvHelpers'
+import { rowGenerate, getColumnsFilterOptions } from '../core/tsvRowUtils'
 
-const useAddTsv = ({ tsvs, chapter, verse, itemIndex, columnsFilter }) => {
+const useAddTsv = ({
+  tsvs,
+  chapter,
+  verse,
+  itemIndex,
+  columnsFilter,
+  addRowToTsv,
+}) => {
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false)
   const [newRow, setNewRow] = useState(
     rowGenerate(tsvs, chapter, verse, itemIndex)
   )
-  const [columnsFilterOptions, setColumnsFilterOptions] = useState({})
 
   // populate columnsFilterOptions when ready
-  useEffect(() => {
+  const columnsFilterOptions = useMemo(() => {
     if (columnsFilter && Object.keys(tsvs).length) {
       const columnNames = Object.keys(tsvs[chapter][verse][itemIndex])
       const columnNamesToFilter = columnsFilter.filter(columnName =>
         columnNames.includes(columnName)
       )
-      const _columnsFilterOptions = getColumnsFilterOptions({
+
+      return getColumnsFilterOptions({
         columnNames: columnNamesToFilter,
         tsvs,
       })
-
-      if (!isEqual(_columnsFilterOptions, columnsFilterOptions)) {
-        setColumnsFilterOptions(_columnsFilterOptions)
-      }
     }
-  }, [columnsFilter, tsvs, columnsFilterOptions])
+  }, [columnsFilter, tsvs])
 
   const openAddRowDialog = () => {
     setIsAddRowDialogOpen(true)
@@ -34,6 +36,12 @@ const useAddTsv = ({ tsvs, chapter, verse, itemIndex, columnsFilter }) => {
 
   const closeAddRowDialog = () => {
     setIsAddRowDialogOpen(false)
+  }
+
+  const submitRowEdits = () => {
+    closeAddRowDialog()
+    addRowToTsv(newRow)
+    setNewRow(rowGenerate(tsvs, chapter, verse, itemIndex))
   }
 
   const changeRowValue = (columnName, newValue) => {
@@ -46,6 +54,7 @@ const useAddTsv = ({ tsvs, chapter, verse, itemIndex, columnsFilter }) => {
     isAddRowDialogOpen,
     openAddRowDialog,
     closeAddRowDialog,
+    submitRowEdits,
     newRow,
     changeRowValue,
     columnsFilterOptions,
