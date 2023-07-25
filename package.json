@@ -1,7 +1,7 @@
 {
   "name": "add-tsv",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "repository": "https://github.com/unfoldingWord/translation-helps-rcl.git",
   "scripts": {
     "dev": "vite",
