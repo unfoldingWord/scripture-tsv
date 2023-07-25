@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { TextField } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
-const NewTsvForm = ({ newRow, changeRowValue, columnsFilterOptions }) => {
+const AddRowForm = ({ newRow, changeRowValue, columnsFilterOptions }) => {
   const renderedRowInputs = Object.entries(newRow).map(
     ([columnName, value]) => {
       let text = ''
@@ -47,6 +47,6 @@ const NewTsvForm = ({ newRow, changeRowValue, columnsFilterOptions }) => {
   return renderedRowInputs
 }
 
-NewTsvForm.propTypes = {}
+AddRowForm.propTypes = {}
 
-export default NewTsvForm
+export default AddRowForm

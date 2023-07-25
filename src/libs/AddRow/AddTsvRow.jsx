@@ -1,11 +1,11 @@
 import React from 'react'
 
-import useTsvMerger from './hooks/useTsvMerger'
+import useTsvData from '../../core/hooks/useTsvData'
 import useAddTsv from './hooks/useAddTsv'
 import AddRowButton from './components/AddRowButton'
 import AddRowDialog from './components/AddRowDialog'
-import NewTsvForm from './components/NewTsvForm'
-import { titusTsvs } from './assets/titusTsvs'
+import AddRowForm from './components/AddRowForm'
+import { titusTsvs } from '../../assets/titusTsvs'
 
 const chapter = 1
 const verse = 1
@@ -14,7 +14,7 @@ const setContent = content => console.log('Content Set: ', content)
 const columnsFilter = ['Reference', 'Chapter', 'Verse', 'SupportReference']
 
 const AddTsvRow = () => {
-  const { onTsvAdd } = useTsvMerger({
+  const { onTsvAdd } = useTsvData({
     tsvs: titusTsvs,
     chapter,
     verse,
@@ -40,7 +40,7 @@ const AddTsvRow = () => {
   })
 
   const tsvForm = (
-    <NewTsvForm
+    <AddRowForm
       newRow={newRow}
       changeRowValue={changeRowValue}
       columnsFilterOptions={columnsFilterOptions}

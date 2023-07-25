@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { rowGenerate, getColumnsFilterOptions } from '../core/tsvRowUtils'
+import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
 
 const useAddTsv = ({
   tsvs,

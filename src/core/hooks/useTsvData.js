@@ -8,9 +8,9 @@ import {
   deleteTsvRow,
   updateTsvRow,
   moveTsvRow,
-} from '../core/tsvDataActions'
+} from '../tsvDataActions'
 
-export default function useTsvMerger({
+export default function useTsvData({
   itemIndex: defaultItemIndex,
   setContent,
   chapter,
