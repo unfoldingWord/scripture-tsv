@@ -12,7 +12,10 @@ import flattenObject from './flattenTsvObject'
  */
 export const addTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
   const newTsvs = cloneDeep(tsvs)
-  const newItems = [...newTsvs[chapter][verse]]
+  let newItems = []
+  if (newTsvs?.chapter?.verse) {
+    newItems = [...newTsvs[chapter][verse]]
+  }
   newItems.splice(itemIndex + 1, 0, newItem)
   newTsvs[chapter][verse] = newItems
 

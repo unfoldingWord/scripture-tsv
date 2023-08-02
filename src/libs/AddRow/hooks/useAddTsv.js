@@ -1,6 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
+import {
+  tsvsObjectToRows,
+  rowGenerate,
+  getColumnsFilterOptions,
+} from '../../../core/tsvRowUtils'
 
 const useAddTsv = ({
   tsvs,
@@ -11,22 +15,30 @@ const useAddTsv = ({
   addRowToTsv,
 }) => {
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false)
-  const [newRow, setNewRow] = useState(
-    rowGenerate(tsvs, chapter, verse, itemIndex)
-  )
+  const [newRow, setNewRow] = useState({})
+
+  // Populate new row when tsvs load
+  useEffect(() => {
+    if (tsvs) {
+      setNewRow(rowGenerate(tsvs, chapter, verse))
+    }
+  }, [tsvs])
 
   // populate columnsFilterOptions when ready
   const columnsFilterOptions = useMemo(() => {
-    if (columnsFilter && Object.keys(tsvs).length) {
-      const columnNames = Object.keys(tsvs[chapter][verse][itemIndex])
-      const columnNamesToFilter = columnsFilter.filter(columnName =>
-        columnNames.includes(columnName)
-      )
+    if (tsvs) {
+      const allItems = tsvsObjectToRows(tsvs)
+      if (columnsFilter && allItems.length) {
+        const columnNames = Object.keys(allItems[0])
+        const columnNamesToFilter = columnsFilter.filter(columnName =>
+          columnNames.includes(columnName)
+        )
 
-      return getColumnsFilterOptions({
-        columnNames: columnNamesToFilter,
-        tsvs,
-      })
+        return getColumnsFilterOptions({
+          columnNames: columnNamesToFilter,
+          allItems,
+        })
+      }
     }
   }, [columnsFilter, tsvs])
 
@@ -41,7 +53,7 @@ const useAddTsv = ({
   const submitRowEdits = () => {
     closeAddRowDialog()
     addRowToTsv(newRow)
-    setNewRow(rowGenerate(tsvs, chapter, verse, itemIndex))
+    setNewRow(rowGenerate(tsvs, chapter, verse))
   }
 
   const changeRowValue = (columnName, newValue) => {
