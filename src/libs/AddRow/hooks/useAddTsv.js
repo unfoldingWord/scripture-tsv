@@ -1,10 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import {
-  tsvsObjectToRows,
-  rowGenerate,
-  getColumnsFilterOptions,
-} from '../../../core/tsvRowUtils'
+import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
+import flattenObject from '../../../core/flattenTsvObject'
 
 const useAddTsv = ({
   tsvs,
@@ -27,17 +24,14 @@ const useAddTsv = ({
   // populate columnsFilterOptions when ready
   const columnsFilterOptions = useMemo(() => {
     if (tsvs) {
-      const allItems = tsvsObjectToRows(tsvs)
+      const allItems = flattenObject(tsvs)
       if (columnsFilter && allItems.length) {
         const columnNames = Object.keys(allItems[0])
         const columnNamesToFilter = columnsFilter.filter(columnName =>
           columnNames.includes(columnName)
         )
 
-        return getColumnsFilterOptions({
-          columnNames: columnNamesToFilter,
-          allItems,
-        })
+        return getColumnsFilterOptions(columnNamesToFilter, allItems)
       }
     }
   }, [columnsFilter, tsvs])

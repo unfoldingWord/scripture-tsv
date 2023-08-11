@@ -1,3 +1,5 @@
+import flattenObject from './flattenTsvObject'
+
 const calculateRowsLengthIndex = allItems => {
   let rowsIndex = {}
   let lengthIndex = {}
@@ -28,20 +30,17 @@ const calculateRowsLengthIndex = allItems => {
   return { rowsIndex, lengthIndex }
 }
 
-export const tsvsObjectToRows = tsvs => {
-  if (!tsvs) return []
-  let rows = []
-  Object.entries(tsvs).forEach(([chapterNum, verses]) => {
-    Object.entries(verses).forEach(([verseNum, items]) => {
-      rows = [...rows, ...items]
-    })
-  })
-  return rows
-}
-
+/**
+ * Generates and pre-fills a tsv row based on existing rows
+ *
+ * @param {Object} tsvs Object containing chapter objects which contain tsv data
+ * @param {int} chapter represents Bible chapter we are interested in
+ * @param {int} verse represents Bible verse we are interested in
+ * @returns {Object} new row object with prefilled column names and some pre-filled values
+ */
 export const rowGenerate = (tsvs, chapter, verse) => {
   if (!tsvs || !Object.keys(tsvs).length) return {}
-  const allItems = tsvsObjectToRows(tsvs)
+  const allItems = flattenObject(tsvs)
   const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
   const rowData = allItems[0]
   const newRow = {}
@@ -71,6 +70,13 @@ export const rowGenerate = (tsvs, chapter, verse) => {
   return { ...newRow }
 }
 
+/**
+ * Generates a new unique ID for a tsv given already used IDs
+ *
+ * @param {string[]} allIds list of IDs that are already in use
+ * @param {int} defaultLength default length of the ID to create
+ * @returns {string} new unique ID for a new tsv row
+ */
 export const generateRandomUID = (allIds = [], defaultLength = 4) => {
   let sampleID = allIds[0]
   let length = sampleID?.length || defaultLength
@@ -136,7 +142,14 @@ const randomId = ({ length }) => {
   return id
 }
 
-export const getColumnsFilterOptions = ({ columnNames, allItems }) => {
+/**
+ * Generates a list of column values to auto-select
+ *
+ * @param {string[]} columnNames list of column name strings to generate auto-select values for
+ * @param {Object[]} allItems list of existing tsv items
+ * @returns {Object} keys of column names and values of column value arrays to auto-select
+ */
+export const getColumnsFilterOptions = (columnNames, allItems) => {
   const columnsFilterOptions = {}
 
   allItems.forEach(item => {
