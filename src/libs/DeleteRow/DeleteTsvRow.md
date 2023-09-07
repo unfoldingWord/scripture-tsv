@@ -1,25 +1,36 @@
-import React, { useState } from 'react'
+### Delete Row Example
 
+<!-- TODO: Add more documentation, especially to hooks and core functions -->
+<!-- TODO: Display original TSVs, new TSVs, and new file content to user -->
+
+This is an example of how to use the UI elements, hooks, and utility functions
+of the `scripture-tsv` library to add a TSV element to an existing TSVs object
+
+#### _UI_
+
+- **DeleteRowButton**
+- **DeleteRowDialog**
+
+#### _Hooks_
+
+- **useTsvData**
+
+#### _Core Functions_
+
+- **tsvsObjectToFileString**
+
+```jsx
+import { useState } from 'react'
 import useTsvData from '../../core/hooks/useTsvData'
 import DeleteRowButton from './components/DeleteRowButton'
 import DeleteRowDialog from './components/DeleteRowDialog'
 import { titusTsvs } from '../../assets/titusTsvs'
 
-/**
- * @description This file is meant to act as a sandbox to display the content
- * of the scripture-tsv library. Currently this sandbox creates a delete TSV
- * button that utilizes the custom hooks and utility functions contained in
- * the application.
- *
- * Users of this library should be able to look at this sandbox and have an idea
- * of how to use each part of this library.
- */
-
 const chapter = 1
 const verse = 1
 const itemIndex = 0
 
-const DeleteTsvRow = () => {
+const Example = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const { getTsvRow, onTsvDelete } = useTsvData({
@@ -51,4 +62,5 @@ const DeleteTsvRow = () => {
   )
 }
 
-export default DeleteTsvRow
+Example()
+```
