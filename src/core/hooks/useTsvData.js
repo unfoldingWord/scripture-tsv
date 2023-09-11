@@ -11,11 +11,11 @@ import {
 } from '../tsvDataActions'
 
 export default function useTsvData({
-  itemIndex: defaultItemIndex,
-  setContent,
-  chapter,
-  verse,
   tsvs,
+  itemIndex: defaultItemIndex,
+  chapter: defaultChapter,
+  verse: defaultVerse,
+  setContent,
 }) {
   const [tsvsState, setTsvsState] = useState(null)
 
@@ -23,9 +23,13 @@ export default function useTsvData({
     if (tsvs) {
       setTsvsState({ ...tsvs })
     }
-  }, [{ ...tsvs }, chapter, verse])
+  }, [{ ...tsvs }, defaultChapter, defaultVerse])
 
-  function onTsvAdd(newItem, itemIndex) {
+  /**
+   * @todo Since we aren't checking for chapter, verse, we should force
+   * these types
+   */
+  function onTsvAdd(newItem, chapter, verse, itemIndex) {
     if (tsvsState) {
       itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = addTsvRow(tsvsState, newItem, chapter, verse, itemIndex)
@@ -41,7 +45,12 @@ export default function useTsvData({
   function onTsvDelete(itemIndex) {
     if (tsvsState) {
       itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
-      const newTsvs = deleteTsvRow(tsvsState, chapter, verse, itemIndex)
+      const newTsvs = deleteTsvRow(
+        tsvsState,
+        defaultChapter,
+        defaultVerse,
+        itemIndex
+      )
       setTsvsState(newTsvs)
 
       const tsvItems = prepareForTsvFileConversion(newTsvs)
@@ -56,8 +65,8 @@ export default function useTsvData({
       const newTsvs = updateTsvRow(
         tsvsState,
         newItem,
-        chapter,
-        verse,
+        defaultChapter,
+        defaultVerse,
         itemIndex
       )
       setTsvsState(newTsvs)
@@ -73,8 +82,8 @@ export default function useTsvData({
       itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = moveTsvRow(
         tsvsState,
-        chapter,
-        verse,
+        defaultChapter,
+        defaultVerse,
         itemIndex,
         itemIndex - 1
       )
@@ -91,8 +100,8 @@ export default function useTsvData({
       itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = moveTsvRow(
         tsvsState,
-        chapter,
-        verse,
+        defaultChapter,
+        defaultVerse,
         itemIndex,
         itemIndex + 1
       )

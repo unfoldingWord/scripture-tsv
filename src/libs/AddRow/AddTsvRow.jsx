@@ -13,6 +13,20 @@ const itemIndex = 1
 const setContent = content => console.log('Content Set: ', content)
 const columnsFilter = ['Reference', 'Chapter', 'Verse', 'SupportReference']
 
+const CHAPTER_VERSE_REGEX = /^[0-9]+:[0-9]+$/
+
+const isChapterVerseFormat = referenceString => {
+  return CHAPTER_VERSE_REGEX.test(referenceString)
+}
+
+/**
+ * reference string has to adhere to 'x:y'
+ */
+const getChapterVerse = referenceString => {
+  const [chapter, verse] = referenceString.split(':').map(Number)
+  return { chapter, verse }
+}
+
 const AddTsvRow = () => {
   const { onTsvAdd } = useTsvData({
     tsvs: titusTsvs,
@@ -21,6 +35,25 @@ const AddTsvRow = () => {
     itemIndex,
     setContent,
   })
+
+  const addRowToTsv = row => {
+    const { Reference: reference, ...rest } = row
+    if (isChapterVerseFormat(reference)) {
+      const { chapter: inputChapter, verse: inputVerse } =
+        getChapterVerse(reference)
+      if (inputChapter !== chapter || inputVerse !== verse) {
+        // Todo: Do we then change the app's reference? Maybe yes
+        onTsvAdd(row, inputChapter, inputVerse, 0)
+        return
+      }
+    }
+
+    /**
+     * @todo We should probably do some more checking for Tsv props. But right
+     * now it's just pretty generic.
+     */
+    onTsvAdd(row, chapter, verse, itemIndex)
+  }
 
   const {
     isAddRowDialogOpen,
@@ -36,7 +69,7 @@ const AddTsvRow = () => {
     verse,
     itemIndex,
     columnsFilter,
-    addRowToTsv: row => onTsvAdd(row, itemIndex),
+    addRowToTsv,
   })
 
   const tsvForm = (

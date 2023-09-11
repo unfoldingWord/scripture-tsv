@@ -50,6 +50,10 @@ const useAddTsv = ({
     setNewRow(rowGenerate(tsvs, chapter, verse))
   }
 
+  /**
+   * @todo This allows users to input whatever value they want... 
+   * How do we handle things that have certain restrictions like references?
+   */
   const changeRowValue = (columnName, newValue) => {
     setNewRow(prevRow => {
       return { ...prevRow, [columnName]: newValue }

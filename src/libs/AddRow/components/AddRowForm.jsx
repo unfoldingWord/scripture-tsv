@@ -1,15 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TextField } from '@material-ui/core'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import { TextField, Autocomplete } from '@mui/material'
 
 const AddRowForm = ({ newRow, changeRowValue, columnsFilterOptions }) => {
   const renderedRowInputs = Object.entries(newRow).map(
     ([columnName, value]) => {
-      let text = ''
-
-      // by default...
-      text = (
+      let text = (
         <TextField
           key={columnName}
           defaultValue={value}
@@ -27,7 +23,7 @@ const AddRowForm = ({ newRow, changeRowValue, columnsFilterOptions }) => {
             options={columnsFilterOptions[columnName]}
             value={value}
             onChange={(event, newValue) => {
-              changeRowValue(columnName, newValue === null ? '' : newValue)
+              changeRowValue(columnName, newValue ?? '')
             }}
             onInputChange={(event, newValue) => {
               changeRowValue(columnName, newValue)

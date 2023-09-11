@@ -7,14 +7,7 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
-  TextField,
-} from '@material-ui/core'
-
-const styles = {
-  paper: {
-    minWidth: '500px',
-  },
-}
+} from '@mui/material'
 
 const AddRowDialog = ({
   title = 'Add Row',
@@ -30,7 +23,11 @@ const AddRowDialog = ({
       onClose={onClose}
       aria-labelledby="add-tsv-dialog-title"
       aria-describedby="add-tsv-dialog-description"
-      sx={styles.paper}
+      sx={{
+        '& .MuiDialog-paper': {
+          minWidth: '500px',
+        },
+      }}
     >
       <DialogTitle id="add-tsv-dialog-title">{title}</DialogTitle>
       <DialogContent>
@@ -39,10 +36,10 @@ const AddRowDialog = ({
         {tsvForm}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary" autoFocus>
+        <Button onClick={onClose} color="error" autoFocus>
           Cancel
         </Button>
-        <Button onClick={onSubmit} color="secondary">
+        <Button onClick={onSubmit} color="primary">
           Add
         </Button>
       </DialogActions>

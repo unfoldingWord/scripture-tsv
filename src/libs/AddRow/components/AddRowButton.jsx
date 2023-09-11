@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { IconButton, Tooltip } from '@material-ui/core'
-import { AddCircleOutline } from '@material-ui/icons'
+import { IconButton, Tooltip } from '@mui/material'
+import { AddCircleOutline } from '@mui/icons-material'
 
 const AddRowButton = ({ title = 'Add Tsv Row', onClick, style = {} }) => {
   return (
@@ -11,7 +11,10 @@ const AddRowButton = ({ title = 'Add Tsv Row', onClick, style = {} }) => {
           key="add-tsv"
           onClick={onClick}
           aria-label={title}
-          style={{ padding: '8px', ...style }}
+          sx={{
+            padding: '8px',
+            ...style,
+          }}
         >
           <AddCircleOutline />
         </IconButton>
