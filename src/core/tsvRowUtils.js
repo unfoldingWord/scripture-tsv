@@ -1,5 +1,33 @@
 import flattenObject from './flattenTsvObject'
 
+/**
+@todo
+This is only used in `isChapterVerseFormat` is this
+planning on being used anywhere else? If not I would
+recommend using it in `isChapterVerseFormat` directly
+(mabye add a comment if you think the name of the function
+isn't clear enough)
+*/
+const CHAPTER_VERSE_REGEX = /^[0-9]+:[0-9]+$/
+
+/**
+@todo add js docs
+*/
+export const isChapterVerseFormat = CHAPTER_VERSE_REGEX.test
+
+/**
+ * reference string has to adhere to 'x:y'
+ * 
+ * @todo what happens when the given string fails to match this format?
+ */
+export const getChapterVerse = referenceString => {
+  const [chapter, verse] = referenceString.split(':').map(Number)
+  return { chapter, verse }
+}
+
+/**
+@todo could you add some documentation for this?
+*/
 const calculateRowsLengthIndex = allItems => {
   let rowsIndex = {}
   let lengthIndex = {}
@@ -32,6 +60,15 @@ const calculateRowsLengthIndex = allItems => {
 
 /**
  * Generates and pre-fills a tsv row based on existing rows
+ * 
+ * @todo How is the data determined for the new row? Could you provide
+ * examples? Are there any specific edge cases that the user should be
+ * aware of? It seems that this is a fairly core function based on its
+ * usage in {@link useAddTsv}
+ * 
+ * @todo refine the type of tsvs object type. `Object` is a bit
+ * opaque here and makes it difficult * for users to know what the
+ * schema of that object should be.
  *
  * @param {Object} tsvs Object containing chapter objects which contain tsv data
  * @param {int} chapter represents Bible chapter we are interested in
@@ -43,6 +80,7 @@ export const rowGenerate = (tsvs, chapter, verse) => {
   const allItems = flattenObject(tsvs)
   const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
   const rowData = allItems[0]
+
   const newRow = {}
 
   Object.entries(rowData).forEach(([column, value]) => {
@@ -138,12 +176,15 @@ const randomId = ({ length }) => {
     length = 9
   }
 
+  /* @todo my linter is showing that substr(from : number, length : number | undefined) is deprecated here. */
   const id = letters[random] + number.toString(36).substr(2, length - 1) // 'xtis06h6'
   return id
 }
 
 /**
  * Generates a list of column values to auto-select
+ * 
+ * @todo add refinement of `Object` types
  *
  * @param {string[]} columnNames list of column name strings to generate auto-select values for
  * @param {Object[]} allItems list of existing tsv items

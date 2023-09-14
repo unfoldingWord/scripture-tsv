@@ -1,3 +1,8 @@
+/**
+ * @description Given a ScriptureTSV object, flatten the nested object into an array
+ * of TSV rows. This flattened array is properly sorted by verse, making sure to put
+ * data such as chapter "front" and "intro" at the beginning.
+ */
 export default function flattenObject(obj) {
   let flatten = []
 

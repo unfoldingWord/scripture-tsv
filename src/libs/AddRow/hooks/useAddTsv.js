@@ -1,13 +1,43 @@
 import { useState, useEffect, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
 import flattenObject from '../../../core/flattenTsvObject'
 
+/**
+@todo It seems that it's creating a small module for users to construct
+manipulate two state full values.
+
+Could you provide the types of the parameters here? My gut instinct is 
+that this module could be simplified by:
+
+
+  - extracting the inner defined functions ( isAddRowDialogOpen,
+  openAddRowDialog) and exposing this as a module that exports
+  stateless functions directly. Though, I'm aware that this might
+  break usage sites. In that case I would still break them out as
+  stateless, and then add an export that packages them in such a
+  way that is compatible with the legacy API.
+
+  - removing the useEffect
+  - removing the internally defined state (it might be better for users
+  to use their own methods for storing the state)
+
+  I've noted the types of the functions exported from this top-level
+  function as a guide for making this module more clear. The following
+  is the notation I'm using: 
+
+  <SideEffect(s)> => Arg Type -> Result Type 
+
+  columnsFilterOptions : Memo (ColumnsFilter x Tsvs) => Tsvs -> Object
+  openAddRowDialog     : State NewRow => undefined -> undefined
+  closeAddRowDialog    : State NewRow => undefined -> undefined
+  submitRowEdits       : State NewRow => undefined -> undefined
+  changeRowValue       : State NewRow => ColumnName x NewValue -> undefined
+
+*/
 const useAddTsv = ({
   tsvs,
   chapter,
   verse,
-  itemIndex,
   columnsFilter,
   addRowToTsv,
 }) => {
@@ -15,12 +45,21 @@ const useAddTsv = ({
   const [newRow, setNewRow] = useState({})
 
   // Populate new row when tsvs load
+  /**
+  @todo useEffect should not be used here as no external system is being
+  tied to here. see https://react.dev/learn/you-might-not-need-an-effect
+  I would recommend setting the initial state of `newRow` to rowGenerate
+  */
   useEffect(() => {
     if (tsvs) {
       setNewRow(rowGenerate(tsvs, chapter, verse))
     }
   }, [tsvs])
 
+  /** 
+  @todo could you give some context on what the schema is for
+  columnNames and how it's used?
+  */
   // populate columnsFilterOptions when ready
   const columnsFilterOptions = useMemo(() => {
     if (tsvs) {
@@ -71,6 +110,7 @@ const useAddTsv = ({
   }
 }
 
+/** @todo is this needed? */
 useAddTsv.propTypes = {}
 
 export default useAddTsv

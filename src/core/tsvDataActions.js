@@ -2,6 +2,11 @@ import cloneDeep from 'lodash.clonedeep'
 import flattenObject from './flattenTsvObject'
 
 /**
+ * @description Contains functions to perform add/delete/move/edit row to a
+ * given ScriptureTSVs object
+ */
+
+/**
  * add a tsv item to an existing tsvs object
  * @param {*} tsvs Object containing tsv data for each book chapter
  * @param {*} newItem Object with keys of tsv column names and values of tsv column values
