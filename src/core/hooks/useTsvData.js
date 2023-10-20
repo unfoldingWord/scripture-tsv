@@ -9,54 +9,34 @@ import {
   updateTsvRow,
   moveTsvRow,
 } from '../tsvDataActions'
+import '../TsvTypes'
 
 /**
- * @typedef {number} ChapterNum
- * A number between 1-150
+ * @typedef {Object} TSVContentAndReference
+ * @property {ScriptureTSV} tsvs - Initial TSVs state.
+ * @property {ItemIndex} itemIndex - Default item index.
+ * @property {ChapterNum} chapter - Default chapter.
+ * @property {VerseNum} verse - Default verse.
+ * @property {SetContentFunction} setContent - Function to set the content.
  */
 
 /**
- * @typedef {number} VerseNum
- * A number between 1-176
- */
-
-/**
- * @typedef {number} ItemIndex
- * A number that is >= 0
- */
-
-/**
- * @typedef {string} ReferenceString
- * A string in the format 'chapter:verse'.
- */
-
-/**
- * @typedef {string} IDString
- * An alphanumeric random string of four characters.
- */
-
-/**
- * @typedef {Object} ScriptureTSV
- *
- * @property {Object.<ChapterNum, Object.<VerseNum, Array.<TSVRow>>>} - Mapping of chapter numbers to verse data.
- */
-
-/**
- * @typedef {Object} TSVRow
- *
- * @property {ReferenceString} Reference
- * @property {IDString} id
- * @property {Object.<string, any>} [column3] - additional TSV column header/data
- * @property {Object.<string, any>} [column4] - additional TSV column header/data
- * @property {Object.<string, any>} [column5] - additional TSV column header/data
- * @property {Object.<string, any>} [column6] - additional TSV column header/data
- * @property {Object.<string, any>} [column7] - additional TSV column header/data
+ * @typedef {Object} UseTsvDataReturn
+ * @property {Function} onTsvAdd - Function to add a new TSV row.
+ * @property {Function} onTsvDelete - Function to delete a TSV row.
+ * @property {Function} onTsvEdit - Function to edit a TSV row.
+ * @property {Function} onTsvMoveBefore - Function to move a TSV row up.
+ * @property {Function} onTsvMoveAfter - Function to move a TSV row down.
  */
 
 /**
  * @description React hook that stores a ScriptureTSV in state.
  * Also provides functions to add/delete/remove/edit from state using the
- * tsvDataActions functions.
+ * tsvDataActions functions. On add/delete/remove/edit, it also converts the
+ * new TSVs to a string format that can be saved to a file, and then passes
+ * this string to the given `setContent` function.
+ * @param {TSVContentAndReference} options - Options for initializing the hook.
+ * @returns {UseTsvDataReturn} - Functions for managing TSV state and content.
  */
 export default function useTsvData({
   tsvs,

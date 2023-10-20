@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
 import flattenObject from '../../../core/flattenTsvObject'
 
@@ -34,27 +34,9 @@ that this module could be simplified by:
   changeRowValue       : State NewRow => ColumnName x NewValue -> undefined
 
 */
-const useAddTsv = ({
-  tsvs,
-  chapter,
-  verse,
-  columnsFilter,
-  addRowToTsv,
-}) => {
+const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false)
-  const [newRow, setNewRow] = useState({})
-
-  // Populate new row when tsvs load
-  /**
-  @todo useEffect should not be used here as no external system is being
-  tied to here. see https://react.dev/learn/you-might-not-need-an-effect
-  I would recommend setting the initial state of `newRow` to rowGenerate
-  */
-  useEffect(() => {
-    if (tsvs) {
-      setNewRow(rowGenerate(tsvs, chapter, verse))
-    }
-  }, [tsvs])
+  const [newRow, setNewRow] = useState(rowGenerate(tsvs, chapter, verse))
 
   /** 
   @todo could you give some context on what the schema is for
@@ -90,7 +72,7 @@ const useAddTsv = ({
   }
 
   /**
-   * @todo This allows users to input whatever value they want... 
+   * @todo This allows users to input whatever value they want...
    * How do we handle things that have certain restrictions like references?
    */
   const changeRowValue = (columnName, newValue) => {

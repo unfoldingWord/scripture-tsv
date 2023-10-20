@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 import flattenObject from './flattenTsvObject'
+import './TsvTypes'
 
 /**
  * @description Contains functions to perform add/delete/move/edit row to a
@@ -8,11 +9,11 @@ import flattenObject from './flattenTsvObject'
 
 /**
  * add a tsv item to an existing tsvs object
- * @param {*} tsvs Object containing tsv data for each book chapter
- * @param {*} newItem Object with keys of tsv column names and values of tsv column values
- * @param {*} chapter Chapter index of tsv to insert
- * @param {*} verse Verse index of tsv to insert
- * @param {*} itemIndex Item index of tsv to insert
+ * @param {ScriptureTSV} tsvs Object containing tsv data for each book chapter
+ * @param {TSVRow} newItem Object with keys of tsv column names and values of tsv column values
+ * @param {ChapterNum} chapter Chapter index of tsv to insert
+ * @param {VerseNum} verse Verse index of tsv to insert
+ * @param {ItemIndex} itemIndex Item index of tsv to insert
  * @returns new tsvs object containing new tsv item
  */
 export const addTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
@@ -35,10 +36,10 @@ export const addTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
 
 /**
  * delete a tsv item from an existing tsvs object
- * @param {*} tsvs Object containing tsv data for each book chapter
- * @param {*} chapter Chapter index of tsv to insert
- * @param {*} verse Verse index of tsv to insert
- * @param {*} itemIndex Item index of tsv to insert
+ * @param {ScriptureTSV} tsvs Object containing tsv data for each book chapter
+ * @param {ChapterNum} chapter Chapter index of tsv to insert
+ * @param {VerseNum} verse Verse index of tsv to insert
+ * @param {ItemIndex} itemIndex Item index of tsv to insert
  * @returns new tsvs object containing new tsv item
  */
 export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
@@ -58,11 +59,11 @@ export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
 
 /**
  * updates a tsv item with a new tsv item
- * @param {*} tsvs Object containing tsv data for each book chapter
- * @param {*} newItem Object with keys of tsv column names and values of tsv column values
- * @param {*} chapter Chapter index of tsv to insert
- * @param {*} verse Verse index of tsv to insert
- * @param {*} itemIndex Item index of tsv to insert
+ * @param {ScriptureTSV} tsvs Object containing tsv data for each book chapter
+ * @param {TSVRow} newItem Object with keys of tsv column names and values of tsv column values
+ * @param {ChapterNum} chapter Chapter index of tsv to insert
+ * @param {VerseNum} verse Verse index of tsv to insert
+ * @param {ItemIndex} itemIndex Item index of tsv to insert
  * @returns new tsvs object containing updated tsv item
  */
 export const updateTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
@@ -81,9 +82,9 @@ export const updateTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
 
 /**
  * Given a tsvs object and reference range tag, update verses in reference range
- * @param {*} tsvs Tsvs object where reference ranges will be updated
- * @param {*} newTsvItem Tsv object that will be given to tsv reference range
- * @param {*} refRangeTag Tag of the reference range to update
+ * @param {ScriptureTSV} tsvs Tsvs object where reference ranges will be updated
+ * @param {TSVRow} newTsvItem Tsv object that will be given to tsv reference range
+ * @param {string} refRangeTag Tag of the reference range to update
  * @returns new tsvs object containing new reference range tsv items
  */
 const updateTsvReferenceRange = (tsvs, newTsvItem, refRangeTag) => {
@@ -106,10 +107,10 @@ const updateTsvReferenceRange = (tsvs, newTsvItem, refRangeTag) => {
 /**
  * Moves a tsv item in a chapter, verse to another index in the tsv items array
  * @param {Object} tsvs tsvs object where note will be move
- * @param {int} chapter
- * @param {int} verse
- * @param {int} itemIndex
- * @param {int} newIndex
+ * @param {ChapterNum} chapter
+ * @param {VerseNum} verse
+ * @param {ItemIndex} itemIndex
+ * @param {ItemIndex} newIndex
  * @returns updated tsvs object with shifted tsv row
  */
 export const moveTsvRow = (tsvs, chapter, verse, itemIndex, newIndex) => {
@@ -121,7 +122,7 @@ export const moveTsvRow = (tsvs, chapter, verse, itemIndex, newIndex) => {
 
 /**
  * Shifts an element in an array at oldIndex to newIndex
- * @param {[]} array
+ * @param {Array.<any>} array
  * @param {int} oldIndex
  * @param {int} newIndex
  * @returns array containing shifted element
@@ -141,7 +142,7 @@ export const arrayMove = (array, oldIndex, newIndex) => {
 
 /**
  * Removes any tsv items that may have been duplicated because of reference ranges
- * @param {*} tsvItems array of tsv items
+ * @param {ScriptureTSV} tsvItems array of tsv items
  * @returns deep copy of unique tsv items
  */
 export const removeReferenceRangeDuplicates = tsvItems => {
@@ -167,7 +168,7 @@ export const removeReferenceRangeDuplicates = tsvItems => {
 
 /**
  * Takes in an array of tsv items and removes duplicates and values to generate correct columns
- * @param {*} tsvs object containing tsvs for all chapter and verses of a book
+ * @param {ScriptureTSV} tsvs object containing tsvs for all chapter and verses of a book
  * @returns uniqueTsvItems a list of unique and prepared tsv items to convert to .tsv
  */
 export const prepareForTsvFileConversion = tsvs => {

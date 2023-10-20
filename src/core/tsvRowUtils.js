@@ -1,33 +1,41 @@
 import flattenObject from './flattenTsvObject'
+import './TsvTypes'
 
 /**
-@todo
-This is only used in `isChapterVerseFormat` is this
-planning on being used anywhere else? If not I would
-recommend using it in `isChapterVerseFormat` directly
-(mabye add a comment if you think the name of the function
-isn't clear enough)
-*/
-const CHAPTER_VERSE_REGEX = /^[0-9]+:[0-9]+$/
-
-/**
-@todo add js docs
-*/
-export const isChapterVerseFormat = CHAPTER_VERSE_REGEX.test
-
-/**
- * reference string has to adhere to 'x:y'
- * 
- * @todo what happens when the given string fails to match this format?
+ * Extracts chapter and verse from string in a chapter:verse format.
+ * If string does not adhere to chapter:verse format, throws an error.
+ * @param {ReferenceString} referenceString The reference string to parse
+ *
+ * @returns {TSVReference} - parsed chapter/verse
+ *
+ * @throws {Error} Throws an error if the string is not a ReferenceString
  */
 export const getChapterVerse = referenceString => {
-  const [chapter, verse] = referenceString.split(':').map(Number)
+  const stringParts = referenceString.split(':').map(Number)
+
+  if (stringParts.length !== 2 || stringParts.some(isNaN)) {
+    throw new Error(
+      `Invalid reference string format: ${referenceString}. Expected format is 'chapter:verse'.`
+    )
+  }
+
+  const [chapter, verse] = stringParts
   return { chapter, verse }
 }
 
 /**
-@todo could you add some documentation for this?
-*/
+ * Calculates the frequency index of unique values and value lengths for each column in a list of TSVRow items.
+ *
+ * @param {Array.<TSVRow>} allItems - An array of TSVRow objects.
+ *
+ * @returns {RowsLengthIndex}
+ *
+ * @example
+ *   let allItems = [{A: '1', B: 'x'}, {A: '2', B: 'y'}, {A: '1', B: 'z'}];
+ *   let { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems);
+ *      rowsIndex => { A: { '1': 2, '2': 1 }, B: { 'x': 1, 'y': 1, 'z': 1 } }
+ *      lengthIndex => { A: { '1': 3 }, B: { '1': 3 } }
+ */
 const calculateRowsLengthIndex = allItems => {
   let rowsIndex = {}
   let lengthIndex = {}
@@ -59,21 +67,21 @@ const calculateRowsLengthIndex = allItems => {
 }
 
 /**
- * Generates and pre-fills a tsv row based on existing rows
- * 
- * @todo How is the data determined for the new row? Could you provide
- * examples? Are there any specific edge cases that the user should be
- * aware of? It seems that this is a fairly core function based on its
- * usage in {@link useAddTsv}
- * 
- * @todo refine the type of tsvs object type. `Object` is a bit
- * opaque here and makes it difficult * for users to know what the
- * schema of that object should be.
+ * Generates and pre-fills a TSV (Tab-Separated Values) row based on existing rows.
  *
- * @param {Object} tsvs Object containing chapter objects which contain tsv data
- * @param {int} chapter represents Bible chapter we are interested in
- * @param {int} verse represents Bible verse we are interested in
- * @returns {Object} new row object with prefilled column names and some pre-filled values
+ * This function creates a new row object based on the patterns and frequency of values
+ * in the existing rows. For example:
+ * - If a value is frequently repeated (less than 65% unique), the new row will duplicate that value.
+ * - If a value is almost always unique and has a short length, a new unique ID is generated.
+ *
+ * NOTE:
+ * - If `tsvs` is empty or not provided, an empty object is returned.
+ *
+ * @param {ScriptureTSV} tsvs - The existing TSVs to base the new row on.
+ * @param {ChapterNum} chapter - Represents the Bible chapter we are interested in.
+ * @param {VerseNum} verse - Represents the Bible verse we are interested in.
+ *
+ * @returns {TSVRow} - New row object with prefilled column names and some pre-filled values.
  */
 export const rowGenerate = (tsvs, chapter, verse) => {
   if (!tsvs || !Object.keys(tsvs).length) return {}
@@ -90,13 +98,13 @@ export const rowGenerate = (tsvs, chapter, verse) => {
     }
     const values = Object.keys(rowsIndex[column]).length
     const valuesRatio = values / allItems.length
-    const duplicateValue = valuesRatio < 0.65 // If the value is reused many times then it should be duplicated.
+    const shouldDuplicateValue = valuesRatio < 0.65 // If the value is reused many times then it should be duplicated.
 
     const valuesLengths = Object.keys(lengthIndex[column])
     const needRandomId = valuesRatio > 0.99 && valuesLengths.length <= 2
 
     let newValue = ''
-    if (duplicateValue) {
+    if (shouldDuplicateValue) {
       newValue = value
     } else if (needRandomId) {
       const allIds = Object.keys(rowsIndex[column])
@@ -111,9 +119,9 @@ export const rowGenerate = (tsvs, chapter, verse) => {
 /**
  * Generates a new unique ID for a tsv given already used IDs
  *
- * @param {string[]} allIds list of IDs that are already in use
- * @param {int} defaultLength default length of the ID to create
- * @returns {string} new unique ID for a new tsv row
+ * @param {Array.<TSVRow>} allIds list of IDs that are already in use
+ * @param {IDLength} defaultLength default length of the ID to create
+ * @returns {IDString} new unique ID for a new tsv row
  */
 export const generateRandomUID = (allIds = [], defaultLength = 4) => {
   let sampleID = allIds[0]
@@ -124,7 +132,7 @@ export const generateRandomUID = (allIds = [], defaultLength = 4) => {
   const UNIQUE_COUNTER_THRESHOLD = 1000
 
   while (notUnique && counter < UNIQUE_COUNTER_THRESHOLD) {
-    newID = randomId({ length })
+    newID = randomId(length)
     notUnique = allIds.includes(newID)
     counter++
   }
@@ -137,8 +145,24 @@ export const generateRandomUID = (allIds = [], defaultLength = 4) => {
   return newID
 }
 
-// ids must begin with a letter
-const randomId = ({ length }) => {
+/**
+ * Generates a random alphanumeric ID string.
+ *
+ * The function first picks a random letter from 'a' to 'z' as the starting character.
+ * Then it generates a random alphanumeric string and appends it to the initial letter.
+ * Finally, it extends the ID to the specified length.
+ *
+ * NOTE:
+ * - If the specified length is greater than 9, it will be capped at 9.
+ *
+ * @param {IDLength} length - The desired length of the ID. If greater than 9, it will be set to 9.
+ *
+ * @returns {IDString} - The randomly generated ID.
+ *
+ * @example
+ *   const id = randomId(5); // Outputs something like 'a3f5z'
+ */
+const randomId = length => {
   // get the initial letter first
   const letters = [
     'a',
@@ -177,18 +201,33 @@ const randomId = ({ length }) => {
   }
 
   /* @todo my linter is showing that substr(from : number, length : number | undefined) is deprecated here. */
-  const id = letters[random] + number.toString(36).substr(2, length - 1) // 'xtis06h6'
+  const id = letters[random] + number.toString(36).substring(2, 2 + length - 1) // 'xtis06h6'
   return id
 }
 
 /**
- * Generates a list of column values to auto-select
- * 
- * @todo add refinement of `Object` types
+ * Generates filter options for specified TSV column names based on the given TSV Row
  *
- * @param {string[]} columnNames list of column name strings to generate auto-select values for
- * @param {Object[]} allItems list of existing tsv items
- * @returns {Object} keys of column names and values of column value arrays to auto-select
+ * The function iterates over each item in the `allItems` array and each column name in `columnNames`.
+ * It then populates an object (`columnsFilterOptions`) where each key is a column name and the value
+ * is a sorted array of unique values present in that column across all items. This is helpful for
+ * column values the user may want to select from, such as `Reference` and `SupportReference`
+ *
+ * @param {Array.<string>} columnNames - Array of column names for which to generate filter options.
+ * @param {Array.<TSVRow>} allItems - Array of TSVRows containing TSV data
+ *
+ * @returns {Object.<string, string[]>} - An object where each key is a column name and the value is a sorted array of unique values for that column.
+ *
+ * @example
+ *   const columnNames = ["Chapter", "Verse"];
+ *   const allItems = [
+ *     { "Chapter": "1", "Verse": "1", "Text": "In the beginning..." },
+ *     { "Chapter": "1", "Verse": "2", "Text": "And the earth was..." },
+ *     { "Chapter": "2", "Verse": "1", "Text": "Thus the heavens..." }
+ *   ];
+ *
+ *   const result = getColumnsFilterOptions(columnNames, allItems);
+ *     Outputs: { "Chapter": ["1", "2"], "Verse": ["1", "2"] }
  */
 export const getColumnsFilterOptions = (columnNames, allItems) => {
   const columnsFilterOptions = {}
