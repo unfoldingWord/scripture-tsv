@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
 import flattenObject from '../../../core/flattenTsvObject'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 /**
 @todo It seems that it's creating a small module for users to construct
@@ -37,6 +38,19 @@ that this module could be simplified by:
 const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false)
   const [newRow, setNewRow] = useState(rowGenerate(tsvs, chapter, verse))
+
+  /**
+   * Sadly, a useEffect is necessary here because this hook will not update
+   * when the tsvs are loaded, since React check object reference for equality
+   * and not the object change itself. This is why we cannot just initally set
+   * new row to rowGenerate().
+   * NOTE: useDeepCompareEffect needs a non-primitive value, and tsvs is
+   * initialized as null, so we are shallow copying. When null, this will
+   * give us an empty object.
+   */
+  useDeepCompareEffect(() => {
+    setNewRow(rowGenerate(tsvs, chapter, verse))
+  }, [{ ...tsvs }])
 
   /** 
   @todo could you give some context on what the schema is for
