@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 import flattenObject from './flattenTsvObject'
+import parser from 'tsv'
 import './TsvTypes'
 
 /**
@@ -169,9 +170,9 @@ export const removeReferenceRangeDuplicates = tsvItems => {
 /**
  * Takes in an array of tsv items and removes duplicates and values to generate correct columns
  * @param {ScriptureTSV} tsvs object containing tsvs for all chapter and verses of a book
- * @returns uniqueTsvItems a list of unique and prepared tsv items to convert to .tsv
+ * @returns tsvFileString a file string of unique and prepared tsv items
  */
-export const prepareForTsvFileConversion = tsvs => {
+export const tsvsObjectToFileString = tsvs => {
   const preparedTsvItems = flattenObject(cloneDeep(tsvs))
 
   // Check if it uses the Reference value, then remove Chapter, Verse and book that were added
@@ -196,5 +197,5 @@ export const prepareForTsvFileConversion = tsvs => {
     uniqueTsvItems[0] = newItem
   }
 
-  return uniqueTsvItems
+  return parser.TSV.stringify(uniqueTsvItems)
 }

@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import parser from 'tsv'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
-  prepareForTsvFileConversion,
   addTsvRow,
   deleteTsvRow,
   updateTsvRow,
@@ -17,7 +15,6 @@ import '../TsvTypes'
  * @property {ItemIndex} itemIndex - Default item index.
  * @property {ChapterNum} chapter - Default chapter.
  * @property {VerseNum} verse - Default verse.
- * @property {SetContentFunction} setContent - Function to set the content.
  */
 
 /**
@@ -32,9 +29,7 @@ import '../TsvTypes'
 /**
  * @description React hook that stores a ScriptureTSV in state.
  * Also provides functions to add/delete/remove/edit from state using the
- * tsvDataActions functions. On add/delete/remove/edit, it also converts the
- * new TSVs to a string format that can be saved to a file, and then passes
- * this string to the given `setContent` function.
+ * tsvDataActions functions.
  * @param {TSVContentAndReference} options - Options for initializing the hook.
  * @returns {UseTsvDataReturn} - Functions for managing TSV state and content.
  */
@@ -43,7 +38,6 @@ export default function useTsvData({
   itemIndex: defaultItemIndex,
   chapter: defaultChapter,
   verse: defaultVerse,
-  setContent,
 }) {
   const [tsvsState, setTsvsState] = useState(null)
 
@@ -68,10 +62,7 @@ export default function useTsvData({
       const newTsvs = addTsvRow(tsvsState, newItem, chapter, verse, itemIndex)
       setTsvsState(newTsvs)
       console.log(newTsvs)
-
-      const tsvItems = prepareForTsvFileConversion(newTsvs)
-      const tsvFile = parser.TSV.stringify(tsvItems)
-      setContent(tsvFile)
+      return newTsvs
     }
   }
 
@@ -90,10 +81,7 @@ export default function useTsvData({
         itemIndex
       )
       setTsvsState(newTsvs)
-
-      const tsvItems = prepareForTsvFileConversion(newTsvs)
-      const tsvFile = parser.TSV.stringify(tsvItems)
-      setContent(tsvFile)
+      return newTsvs
     }
   }
 
@@ -114,10 +102,7 @@ export default function useTsvData({
         itemIndex
       )
       setTsvsState(newTsvs)
-
-      const tsvItems = prepareForTsvFileConversion(newTsvs)
-      const tsvFile = parser.TSV.stringify(tsvItems)
-      setContent(tsvFile)
+      return newTsvs
     }
   }
 
@@ -136,10 +121,7 @@ export default function useTsvData({
         itemIndex - 1
       )
       setTsvsState(newTsvs)
-
-      const tsvItems = prepareForTsvFileConversion(newTsvs)
-      const tsvFile = parser.TSV.stringify(tsvItems)
-      setContent(tsvFile)
+      return newTsvs
     }
   }
 
@@ -158,10 +140,7 @@ export default function useTsvData({
         itemIndex + 1
       )
       setTsvsState(newTsvs)
-
-      const tsvItems = prepareForTsvFileConversion(newTsvs)
-      const tsvFile = parser.TSV.stringify(tsvItems)
-      setContent(tsvFile)
+      return newTsvs
     }
   }
 

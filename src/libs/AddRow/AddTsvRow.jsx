@@ -7,6 +7,7 @@ import AddRowDialog from './components/AddRowDialog'
 import AddRowForm from './components/AddRowForm'
 import { titusTsvs } from '../../assets/titusTsvs'
 import { getChapterVerse } from '../../core/tsvRowUtils'
+import { tsvsObjectToFileString } from '../../core/tsvDataActions'
 import '../../core/TsvTypes.js'
 
 /**
@@ -22,8 +23,6 @@ const chapter = 1
 const verse = 2
 const itemIndex = 1
 
-const setContent = content => console.log('Content Set: ', content)
-
 const columnsFilter = ['Reference', 'Chapter', 'Verse', 'SupportReference']
 
 const AddTsvRow = () => {
@@ -32,7 +31,6 @@ const AddTsvRow = () => {
     chapter,
     verse,
     itemIndex,
-    setContent,
   })
 
   /**
@@ -51,10 +49,12 @@ const AddTsvRow = () => {
         getChapterVerse(Reference)
       if (inputChapter !== chapter || inputVerse !== verse) {
         // Todo: Do we then change the app's reference? Maybe yes
-        onTsvAdd(row, inputChapter, inputVerse, 0)
+        const newTsvs = onTsvAdd(row, inputChapter, inputVerse, 0)
+        console.log(tsvsObjectToFileString(newTsvs))
         return
       }
-      onTsvAdd(row, chapter, verse, itemIndex)
+      const newTsvs = onTsvAdd(row, chapter, verse, itemIndex)
+      console.log(tsvsObjectToFileString(newTsvs))
     } catch (error) {
       console.error(
         'Input reference in new row is not of type chapter:verse',
