@@ -6,6 +6,7 @@ import {
   deleteTsvRow,
   updateTsvRow,
   moveTsvRow,
+  tsvsObjectToFileString,
 } from '../tsvDataActions'
 import '../TsvTypes'
 
@@ -15,6 +16,7 @@ import '../TsvTypes'
  * @property {ItemIndex} itemIndex - Default item index.
  * @property {ChapterNum} chapter - Default chapter.
  * @property {VerseNum} verse - Default verse.
+ * @property {SetContentFunction} setContent - Function to set the content.
  */
 
 /**
@@ -29,7 +31,9 @@ import '../TsvTypes'
 /**
  * @description React hook that stores a ScriptureTSV in state.
  * Also provides functions to add/delete/remove/edit from state using the
- * tsvDataActions functions.
+ * tsvDataActions functions. On edit, it also converts the
+ * new TSVs to a string format that can be saved to a file, and then passes
+ * this string to the given `setContent` function.
  * @param {TSVContentAndReference} options - Options for initializing the hook.
  * @returns {UseTsvDataReturn} - Functions for managing TSV state and content.
  */
@@ -38,6 +42,7 @@ export default function useTsvData({
   itemIndex: defaultItemIndex,
   chapter: defaultChapter,
   verse: defaultVerse,
+  setContent,
 }) {
   const [tsvsState, setTsvsState] = useState(null)
 
@@ -102,7 +107,8 @@ export default function useTsvData({
         itemIndex
       )
       setTsvsState(newTsvs)
-      return newTsvs
+
+      setContent(tsvsObjectToFileString(newTsvs))
     }
   }
 

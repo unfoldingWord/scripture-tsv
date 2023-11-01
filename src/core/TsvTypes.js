@@ -40,6 +40,11 @@
  */
 
 /**
+ * @callback SetContentFunction
+ * @param {TSVFileContent} tsvFileContent
+ */
+
+/**
  * @typedef {Object} ScriptureTSV
  *
  * @property {Object.<ChapterNum, Object.<VerseNum, Array.<TSVRow>>>} - Mapping of chapter numbers to verse data.
