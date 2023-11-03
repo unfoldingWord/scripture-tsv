@@ -49,6 +49,15 @@ export type IDLength = number
 export type IDString = string
 
 /**
+ * A string denoting a TSVRow id and reference range.
+ * 
+ * @example js3o_1:2-5
+ * @example fg89_1:2;2:3
+ * 
+ */
+export type ReferenceRangeTag = string
+
+/**
  * String containing TSV file content.
  */
 export type TSVFileContent = string
@@ -68,12 +77,25 @@ export interface TSVRow {
 }
 
 /**
+ * Object representing a TSV Row item to update
+ */
+export interface UpdatedRowValue {
+  [columnName: string]: string
+}
+
+/**
  * An object representing a scripture TSV.
  * Mapping of chapter numbers to verse data.
  */
 export interface ScriptureTSV {
   [chapter: ChapterNumString]: { [verse: VerseNumString]: Array<TSVRow> }
 }
+
+export type ReferenceRangeOperation = (
+  verseArray: TSVRow[], 
+  refRangeTag: ReferenceRangeTag, 
+  ...restParams: any[]
+) => TSVRow[];
 
 /**
  * An object representing the frequency index of unique values and value lengths for each column in a list of TSVRow items.
