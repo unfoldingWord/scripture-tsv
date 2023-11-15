@@ -1,5 +1,5 @@
 import flattenObject from './flattenTsvObject'
-import { isValidScriptureTSV } from './scriptureTsvValidation'
+import { isValidScriptureTSV, isValidTSVRow } from './scriptureTsvValidation'
 import './TsvTypes'
 
 /**
@@ -38,10 +38,16 @@ export const getChapterVerse = referenceString => {
  *      lengthIndex => { A: { '1': 3 }, B: { '1': 3 } }
  */
 const calculateRowsLengthIndex = allItems => {
+  if (!Array.isArray(allItems)) {
+    throw new Error('allItems is not of type array!')
+  }
+
   let rowsIndex = {}
   let lengthIndex = {}
 
   allItems.forEach(item => {
+    if (!isValidTSVRow(item)) return
+
     Object.entries(item).forEach(([column, value]) => {
       if (!rowsIndex[column]) {
         rowsIndex[column] = {}
@@ -87,9 +93,13 @@ const calculateRowsLengthIndex = allItems => {
 export const rowGenerate = (tsvs, chapter, verse) => {
   if (!isValidScriptureTSV(tsvs)) return {}
   const allItems = flattenObject(tsvs)
-  const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
-  const rowData = allItems[0]
+  if (!allItems.length) return {}
 
+  const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
+  if (Object.keys(rowsIndex).length === 0) return {}
+
+  // If tsvs is valid, items not empty, and rowsIndex exists then items are valid
+  const rowData = allItems[0]
   const newRow = {}
 
   Object.entries(rowData).forEach(([column, value]) => {

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
 import flattenObject from '../../../core/flattenTsvObject'
+import { isValidScriptureTSV } from '../../../core/scriptureTsvValidation'
 
 /**
 @todo It seems that it's creating a small module for users to construct
@@ -45,7 +46,7 @@ const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
   // populate columnsFilterOptions when ready
   const columnsFilterOptions = useMemo(() => {
     if (!isValidScriptureTSV(tsvs)) return {}
-    
+
     const allItems = flattenObject(tsvs)
     if (columnsFilter && allItems.length) {
       const columnNames = Object.keys(allItems[0])
