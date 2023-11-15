@@ -46,6 +46,8 @@ export default function useTsvData({
 }) {
   const [tsvsState, setTsvsState] = useState(null)
 
+  // Todo: It would probably be more helpful if we fetched TSVs directly
+  // here instead of passing them in as a prop
   useDeepCompareEffect(() => {
     if (tsvs) {
       setTsvsState({ ...tsvs })
