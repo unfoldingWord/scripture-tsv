@@ -1,4 +1,5 @@
 import flattenObject from './flattenTsvObject'
+import { isValidScriptureTSV } from './scriptureTsvValidation'
 import './TsvTypes'
 
 /**
@@ -84,7 +85,7 @@ const calculateRowsLengthIndex = allItems => {
  * @returns {TSVRow} - New row object with prefilled column names and some pre-filled values.
  */
 export const rowGenerate = (tsvs, chapter, verse) => {
-  if (!tsvs || !Object.keys(tsvs).length) return {}
+  if (!isValidScriptureTSV(tsvs)) return {}
   const allItems = flattenObject(tsvs)
   const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
   const rowData = allItems[0]

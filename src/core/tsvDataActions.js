@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 import flattenObject from './flattenTsvObject'
+import { isValidScriptureTSV } from './scriptureTsvValidation'
 import parser from 'tsv'
 import './TsvTypes'
 
@@ -18,6 +19,10 @@ import './TsvTypes'
  * @returns new tsvs object containing new tsv item
  */
 export const addTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
+  if (!isValidScriptureTSV(tsvs)) {
+    throw new Error('Invalid Scripture TSV input')
+  }
+
   const newTsvs = cloneDeep(tsvs)
   let newItems = []
   if (newTsvs?.[chapter]?.[verse]) {
@@ -44,6 +49,10 @@ export const addTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
  * @returns new tsvs object containing new tsv item
  */
 export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
+  if (!isValidScriptureTSV(tsvs)) {
+    throw new Error('Invalid Scripture TSV input')
+  }
+
   const newTsvs = cloneDeep(tsvs)
   const items = newTsvs[chapter][verse]
   const newItems = [...items.slice(0, itemIndex), ...items.slice(itemIndex + 1)]
@@ -68,6 +77,10 @@ export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
  * @returns new tsvs object containing updated tsv item
  */
 export const updateTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
+  if (!isValidScriptureTSV(tsvs)) {
+    throw new Error('Invalid Scripture TSV input')
+  }
+
   const newTsvs = cloneDeep(tsvs)
   const oldTsvItem = { ...tsvs[chapter][verse][itemIndex] }
   const newTsvItem = { ...oldTsvItem, ...newItem }
@@ -89,6 +102,10 @@ export const updateTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
  * @returns new tsvs object containing new reference range tsv items
  */
 const updateTsvReferenceRange = (tsvs, newTsvItem, refRangeTag) => {
+  if (!isValidScriptureTSV(tsvs)) {
+    throw new Error('Invalid Scripture TSV input')
+  }
+
   const newTsvs = cloneDeep(tsvs)
   for (const chapter of Object.keys(newTsvs)) {
     const tsvChapter = newTsvs[chapter]
@@ -115,6 +132,10 @@ const updateTsvReferenceRange = (tsvs, newTsvItem, refRangeTag) => {
  * @returns updated tsvs object with shifted tsv row
  */
 export const moveTsvRow = (tsvs, chapter, verse, itemIndex, newIndex) => {
+  if (!isValidScriptureTSV(tsvs)) {
+    throw new Error('Invalid Scripture TSV input')
+  }
+
   const newTsvs = cloneDeep(tsvs)
   const newItems = arrayMove(newTsvs[chapter][verse], itemIndex, newIndex)
   newTsvs[chapter][verse] = newItems

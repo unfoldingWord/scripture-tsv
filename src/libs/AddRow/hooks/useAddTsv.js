@@ -44,16 +44,16 @@ const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
   */
   // populate columnsFilterOptions when ready
   const columnsFilterOptions = useMemo(() => {
-    if (tsvs) {
-      const allItems = flattenObject(tsvs)
-      if (columnsFilter && allItems.length) {
-        const columnNames = Object.keys(allItems[0])
-        const columnNamesToFilter = columnsFilter.filter(columnName =>
-          columnNames.includes(columnName)
-        )
+    if (!isValidScriptureTSV(tsvs)) return {}
+    
+    const allItems = flattenObject(tsvs)
+    if (columnsFilter && allItems.length) {
+      const columnNames = Object.keys(allItems[0])
+      const columnNamesToFilter = columnsFilter.filter(columnName =>
+        columnNames.includes(columnName)
+      )
 
-        return getColumnsFilterOptions(columnNamesToFilter, allItems)
-      }
+      return getColumnsFilterOptions(columnNamesToFilter, allItems)
     }
   }, [columnsFilter, tsvs])
 
