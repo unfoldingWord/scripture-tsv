@@ -1,6 +1,7 @@
 import flattenObject from './flattenTsvObject'
 import { isValidScriptureTSV, isValidTSVRow } from './scriptureTsvValidation'
 import './TsvTypes'
+import { parseReferenceToList } from 'bible-reference-range'
 
 /**
  * Extracts chapter and verse from string in a chapter:verse format.
@@ -12,15 +13,15 @@ import './TsvTypes'
  * @throws {Error} Throws an error if the string is not a ReferenceString
  */
 export const getChapterVerse = referenceString => {
-  const stringParts = referenceString.split(':').map(Number)
+  const verseChunks = parseReferenceToList(referenceString)
 
-  if (stringParts.length !== 2 || stringParts.some(isNaN)) {
+  if (!verseChunks) {
     throw new Error(
       `Invalid reference string format: ${referenceString}. Expected format is 'chapter:verse'.`
     )
   }
 
-  const [chapter, verse] = stringParts
+  const { chapter, verse } = verseChunks[0]
   return { chapter, verse }
 }
 
@@ -105,6 +106,11 @@ export const rowGenerate = (tsvs, chapter, verse) => {
   Object.entries(rowData).forEach(([column, value]) => {
     if (column === 'Reference') {
       newRow[column] = `${chapter}:${verse}`
+      return
+    }
+    if (column === 'ID') {
+      const allIds = Object.keys(rowsIndex[column])
+      newRow[column] = generateRandomUID(allIds)
       return
     }
     const values = Object.keys(rowsIndex[column]).length
@@ -211,7 +217,6 @@ const randomId = length => {
     length = 9
   }
 
-  /* @todo my linter is showing that substr(from : number, length : number | undefined) is deprecated here. */
   const id = letters[random] + number.toString(36).substring(2, 2 + length - 1) // 'xtis06h6'
   return id
 }
