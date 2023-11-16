@@ -1,5 +1,7 @@
 import flattenObject from './flattenTsvObject'
+import { isValidScriptureTSV, isValidTSVRow } from './scriptureTsvValidation'
 import './TsvTypes'
+import { parseReferenceToList } from 'bible-reference-range'
 
 /**
  * Extracts chapter and verse from string in a chapter:verse format.
@@ -11,15 +13,15 @@ import './TsvTypes'
  * @throws {Error} Throws an error if the string is not a ReferenceString
  */
 export const getChapterVerse = referenceString => {
-  const stringParts = referenceString.split(':').map(Number)
+  const verseChunks = parseReferenceToList(referenceString)
 
-  if (stringParts.length !== 2 || stringParts.some(isNaN)) {
+  if (!verseChunks) {
     throw new Error(
       `Invalid reference string format: ${referenceString}. Expected format is 'chapter:verse'.`
     )
   }
 
-  const [chapter, verse] = stringParts
+  const { chapter, verse } = verseChunks[0]
   return { chapter, verse }
 }
 
@@ -37,10 +39,16 @@ export const getChapterVerse = referenceString => {
  *      lengthIndex => { A: { '1': 3 }, B: { '1': 3 } }
  */
 const calculateRowsLengthIndex = allItems => {
+  if (!Array.isArray(allItems)) {
+    throw new Error('allItems is not of type array!')
+  }
+
   let rowsIndex = {}
   let lengthIndex = {}
 
   allItems.forEach(item => {
+    if (!isValidTSVRow(item)) return
+
     Object.entries(item).forEach(([column, value]) => {
       if (!rowsIndex[column]) {
         rowsIndex[column] = {}
@@ -84,16 +92,25 @@ const calculateRowsLengthIndex = allItems => {
  * @returns {TSVRow} - New row object with prefilled column names and some pre-filled values.
  */
 export const rowGenerate = (tsvs, chapter, verse) => {
-  if (!tsvs || !Object.keys(tsvs).length) return {}
+  if (!isValidScriptureTSV(tsvs)) return {}
   const allItems = flattenObject(tsvs)
-  const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
-  const rowData = allItems[0]
+  if (!allItems.length) return {}
 
+  const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
+  if (Object.keys(rowsIndex).length === 0) return {}
+
+  // If tsvs is valid, items not empty, and rowsIndex exists then items are valid
+  const rowData = allItems[0]
   const newRow = {}
 
   Object.entries(rowData).forEach(([column, value]) => {
     if (column === 'Reference') {
       newRow[column] = `${chapter}:${verse}`
+      return
+    }
+    if (column === 'ID') {
+      const allIds = Object.keys(rowsIndex[column])
+      newRow[column] = generateRandomUID(allIds)
       return
     }
     const values = Object.keys(rowsIndex[column]).length
@@ -200,7 +217,6 @@ const randomId = length => {
     length = 9
   }
 
-  /* @todo my linter is showing that substr(from : number, length : number | undefined) is deprecated here. */
   const id = letters[random] + number.toString(36).substring(2, 2 + length - 1) // 'xtis06h6'
   return id
 }

@@ -38,7 +38,7 @@ const AddTsvRow = () => {
    *
    * @param {TSVRow} row - The row to be added. Must contain a 'Reference' field formatted as 'chapter:verse'.
    *
-   * @throws {Error} Throws an error if the 'Reference' field is not in the correct 'chapter:verse' format.
+   * @throws {Error} Throws an error if reference or new row are not valid TSV data
    *
    * @todo Consider adding more validation for TSV properties as currently since it's quite generic.
    */
@@ -56,10 +56,7 @@ const AddTsvRow = () => {
       const newTsvs = onTsvAdd(row, chapter, verse, itemIndex)
       console.log(tsvsObjectToFileString(newTsvs))
     } catch (error) {
-      console.error(
-        'Input reference in new row is not of type chapter:verse',
-        error
-      )
+      console.error('Error while adding new TSV Row:', error)
     }
   }
 

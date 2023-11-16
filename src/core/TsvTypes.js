@@ -15,7 +15,9 @@
 
 /**
  * @typedef {string} ReferenceString
- * A string in the format 'chapter:verse'.
+ * A string in the format 'chapter:verse'
+ * 'chapter' can be a number or the word 'front',
+ * 'verse' can be a number, the word 'intro', or a verse range (verseStart-verseEnd)
  */
 
 /**
@@ -54,12 +56,17 @@
  * @typedef {Object} TSVRow
  *
  * @property {ReferenceString} Reference
- * @property {IDString} id
+ * @property {IDString} ID
  * @property {Object.<string, any>} column3 - additional TSV column header/data
  * @property {Object.<string, any>} column4 - additional TSV column header/data
  * @property {Object.<string, any>} column5 - additional TSV column header/data
  * @property {Object.<string, any>} column6 - additional TSV column header/data
  * @property {Object.<string, any>} column7 - additional TSV column header/data
+ */
+
+/**
+ * @typedef {Object} UpdatedRowValue
+ * @property {string} columnName - Description of the property.
  */
 
 /**
