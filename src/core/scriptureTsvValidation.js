@@ -6,7 +6,7 @@ import { parseReferenceToList } from 'bible-reference-range'
  * @returns {boolean} - True if the object is a ScriptureTSV, false otherwise.
  */
 export function isValidScriptureTSV(obj) {
-  if (typeof obj !== 'object' || obj === null) {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
     return false
   }
 
