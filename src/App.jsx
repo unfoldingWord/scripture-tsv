@@ -1,11 +1,11 @@
 import React from 'react'
 import './App.css'
-import AddTsvRow from './libs/AddRow/AddTsvRow'
+import DeleteTsvRow from './libs/DeleteRow/DeleteTsvRow'
 
 function App() {
   return (
     <>
-      <AddTsvRow />
+      <DeleteTsvRow />
     </>
   )
 }
