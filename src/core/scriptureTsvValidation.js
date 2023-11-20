@@ -1,4 +1,5 @@
 import { parseReferenceToList } from 'bible-reference-range'
+import './TsvTypes'
 
 /**
  * Validates if an object is of type ScriptureTSV.
@@ -80,4 +81,19 @@ export function isValidTSVRow(row) {
   }
 
   return true
+}
+
+/**
+ * Checks if a specific chapter and verse exist within a given ScriptureTSVs object.
+ *
+ * @param {ScriptureTSV} tsvs - The ScriptureTSVs object containing TSV data for each book chapter.
+ * @param {ChapterNum} chapter - The chapter number to check for existence.
+ * @param {VerseNum} verse - The verse number within the specified chapter to check for existence.
+ * @returns {boolean} True if the specified chapter and verse exist in the ScriptureTSVs object, otherwise false.
+ */
+export const doesChapterVerseExistInTsvs = (tsvs, chapter, verse) => {
+  if (isValidScriptureTSV(tsvs) && tsvs.hasOwnProperty(chapter)) {
+    return tsvs[chapter].hasOwnProperty(verse)
+  }
+  return false
 }
