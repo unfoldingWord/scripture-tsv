@@ -1,6 +1,10 @@
 import cloneDeep from 'lodash.clonedeep'
 import flattenObject from './flattenTsvObject'
-import { isValidScriptureTSV, isValidTSVRow } from './scriptureTsvValidation'
+import {
+  isValidScriptureTSV,
+  isValidTSVRow,
+  doesChapterVerseExistInTsvs,
+} from './scriptureTsvValidation'
 import parser from 'tsv'
 import './TsvTypes'
 
@@ -54,6 +58,9 @@ export const addTsvRow = (tsvs, newItem, chapter, verse, itemIndex) => {
 export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
   if (!isValidScriptureTSV(tsvs)) {
     throw new Error('Invalid Scripture TSV input')
+  }
+  if (!doesChapterVerseExistInTsvs(tsvs, chapter, verse)) {
+    throw new Error(`No item to delete at chapter: ${chapter} verse: ${verse}`)
   }
 
   const newTsvs = cloneDeep(tsvs)

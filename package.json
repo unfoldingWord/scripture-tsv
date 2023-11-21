@@ -1,6 +1,6 @@
 {
   "name": "scripture-tsv",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "repository": "https://github.com/unfoldingWord/translation-helps-rcl.git",
   "main": "dist/index.js",
   "scripts": {
