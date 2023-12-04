@@ -3,7 +3,7 @@ import flattenObject from './flattenTsvObject'
 import {
   isValidScriptureTSV,
   isValidTSVRow,
-  doesChapterVerseExistInTsvs,
+  doesItemIndexExistInTsvs,
 } from './scriptureTsvValidation'
 import parser from 'tsv'
 import './TsvTypes'
@@ -59,8 +59,10 @@ export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
   if (!isValidScriptureTSV(tsvs)) {
     throw new Error('Invalid Scripture TSV input')
   }
-  if (!doesChapterVerseExistInTsvs(tsvs, chapter, verse)) {
-    throw new Error(`No item to delete at chapter: ${chapter} verse: ${verse}`)
+  if (!doesItemIndexExistInTsvs(tsvs, chapter, verse, itemIndex)) {
+    throw new Error(
+      `No item to delete at chapter: ${chapter} verse: ${verse} itemIndex: ${itemIndex}`
+    )
   }
 
   const newTsvs = cloneDeep(tsvs)

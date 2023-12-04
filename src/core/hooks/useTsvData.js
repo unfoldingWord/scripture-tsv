@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import useDeepCompareEffect from 'use-deep-compare-effect'
-import { doesChapterVerseExistInTsvs } from '../scriptureTsvValidation'
+import { doesItemIndexExistInTsvs } from '../scriptureTsvValidation'
 
 import {
   addTsvRow,
@@ -56,8 +56,15 @@ export default function useTsvData({
   }, [{ ...tsvs }, defaultChapter, defaultVerse])
 
   function getTsvRow(itemIndex) {
-    if (doesChapterVerseExistInTsvs(tsvsState, defaultChapter, defaultVerse)) {
-      itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
+    itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
+    if (
+      doesItemIndexExistInTsvs(
+        tsvsState,
+        defaultChapter,
+        defaultVerse,
+        itemIndex
+      )
+    ) {
       return tsvsState[defaultChapter][defaultVerse][itemIndex]
     }
     return null
