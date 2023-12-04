@@ -97,3 +97,22 @@ export const doesChapterVerseExistInTsvs = (tsvs, chapter, verse) => {
   }
   return false
 }
+
+/**
+ * Checks if a specific item index at chapter:verse exists within a given ScriptureTSVs object.
+ *
+ * @param {ScriptureTSV} tsvs - The ScriptureTSVs object containing TSV data for each book chapter.
+ * @param {ChapterNum} chapter - The chapter number to check for existence.
+ * @param {VerseNum} verse - The verse number within the specified chapter to check for existence.
+ * @param {number} itemIndex - The index of the item within the verse array to check for existence.
+ * @returns {boolean} True if the specified chapter, verse, and item exist in the ScriptureTSVs object, otherwise false.
+ */
+export const doesItemIndexExistInTsvs = (tsvs, chapter, verse, itemIndex) => {
+  if (doesChapterVerseExistInTsvs(tsvs, chapter, verse)) {
+    return (
+      Array.isArray(tsvs[chapter][verse]) &&
+      tsvs[chapter][verse].length > itemIndex
+    )
+  }
+  return false
+}

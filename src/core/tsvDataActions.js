@@ -3,7 +3,7 @@ import flattenObject from './flattenTsvObject'
 import {
   isValidScriptureTSV,
   isValidTSVRow,
-  doesChapterVerseExistInTsvs,
+  doesItemIndexExistInTsvs,
 } from './scriptureTsvValidation'
 import parser from 'tsv'
 import './TsvTypes'
@@ -59,20 +59,22 @@ export const deleteTsvRow = (tsvs, chapter, verse, itemIndex) => {
   if (!isValidScriptureTSV(tsvs)) {
     throw new Error('Invalid Scripture TSV input')
   }
-  if (!doesChapterVerseExistInTsvs(tsvs, chapter, verse)) {
-    throw new Error(`No item to delete at chapter: ${chapter} verse: ${verse}`)
+  if (!doesItemIndexExistInTsvs(tsvs, chapter, verse, itemIndex)) {
+    throw new Error(
+      `No item to delete at chapter: ${chapter} verse: ${verse} itemIndex: ${itemIndex}`
+    )
   }
 
   const newTsvs = cloneDeep(tsvs)
   const items = newTsvs[chapter][verse]
+  const itemToDelete = newTsvs[chapter][verse][itemIndex]
   const newItems = [...items.slice(0, itemIndex), ...items.slice(itemIndex + 1)]
   newTsvs[chapter][verse] = newItems
 
-  // TODO: Handle reference ranges
-  // let refRangeTag = newTsvItem?._referenceRange;
-  // if (refRangeTag) {
-  //   return updateTsvReferenceRange(newTsvs, newTsvItem, refRangeTag)
-  // }
+  let refRangeTag = itemToDelete?._referenceRange
+  if (refRangeTag) {
+    return modifyTsvReferenceRange(newTsvs, refRangeTag, deleteRefRange)
+  }
 
   return newTsvs
 }
@@ -101,42 +103,64 @@ export const updateTsvRow = (tsvs, newRowValue, chapter, verse, itemIndex) => {
 
   let refRangeTag = newTsvItem?._referenceRange
   if (refRangeTag) {
-    return updateTsvReferenceRange(newTsvs, newTsvItem, refRangeTag)
+    return modifyTsvReferenceRange(
+      newTsvs,
+      refRangeTag,
+      updateRefRange,
+      newTsvItem
+    )
   }
 
   return newTsvs
 }
 
 /**
- * Given a tsvs object and reference range tag, update verses in reference range
- * @param {ScriptureTSV} tsvs Tsvs object where reference ranges will be updated
- * @param {TSVRow} newTsvItem Tsv object that will be given to tsv reference range
- * @param {string} refRangeTag Tag of the reference range to update
- * @returns new tsvs object containing new reference range tsv items
+ * Handles an operation on a specific reference range within a Scripture TSV object.
+ *
+ * @param {ScriptureTSV} tsvs - The TSVs object where reference ranges will be modified.
+ * @param {string} refRangeTag - The tag of the reference range to modify.
+ * @param {Function} operation - The callback function to perform the specific operation.
+ * @param {...any} rest - Additional arguments required by the operation callback.
+ * @returns {ScriptureTSV} A new TSVs object with the modified reference range.
+ * @throws Will throw an error if the input TSVs or TSV item is invalid.
  */
-const updateTsvReferenceRange = (tsvs, newTsvItem, refRangeTag) => {
-  if (!isValidScriptureTSV(tsvs)) {
-    throw new Error('Invalid Scripture TSV input')
-  }
-  if (!isValidTSVRow(newTsvItem)) {
-    throw new Error('Invalid new row input!')
-  }
-
+const modifyTsvReferenceRange = (tsvs, refRangeTag, operation, ...rest) => {
   const newTsvs = cloneDeep(tsvs)
   for (const chapter of Object.keys(newTsvs)) {
     const tsvChapter = newTsvs[chapter]
     for (const verse of Object.keys(tsvChapter)) {
-      const tsvVerse = [...tsvChapter[verse]] || []
-      newTsvs[chapter][verse] = tsvVerse.map(note => {
-        if (note?._referenceRange === refRangeTag) {
-          return newTsvItem
-        }
-        return note
-      })
+      newTsvs[chapter][verse] = operation(
+        tsvChapter[verse],
+        refRangeTag,
+        ...rest
+      )
     }
   }
   return newTsvs
 }
+
+/**
+ * Updates a specific reference range within a verse array with a new TSV item.
+ *
+ * @param {Array} verseArray - The array of verse objects to be updated.
+ * @param {string} refRangeTag - The tag of the reference range to update.
+ * @param {TSVRow} tsvItem - The new TSV item to replace in the reference range.
+ * @returns {Array} An updated array of verse objects with the specified reference range updated.
+ */
+const updateRefRange = (verseArray, refRangeTag, tsvItem) =>
+  verseArray.map(note =>
+    note?._referenceRange === refRangeTag ? tsvItem : note
+  )
+
+/**
+ * Deletes a specific reference range from a verse array.
+ *
+ * @param {Array} verseArray - The array of verse objects to be modified.
+ * @param {string} refRangeTag - The tag of the reference range to delete.
+ * @returns {Array} An updated array of verse objects with the specified reference range removed.
+ */
+const deleteRefRange = (verseArray, refRangeTag) =>
+  verseArray.filter(note => note?._referenceRange !== refRangeTag)
 
 /**
  * Moves a tsv item in a chapter, verse to another index in the tsv items array
