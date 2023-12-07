@@ -1,12 +1,19 @@
 import { parseReferenceToList } from 'bible-reference-range'
-import './TsvTypes'
+import {
+  ScriptureTSV,
+  TSVRow,
+  ChapterNum,
+  ChapterNumString,
+  VerseNum,
+  VerseNumString,
+} from './TsvTypes'
 
 /**
  * Validates if an object is of type ScriptureTSV.
- * @param {any} obj - The object to be validated.
- * @returns {boolean} - True if the object is a ScriptureTSV, false otherwise.
+ *
+ * @returns True if the object is a ScriptureTSV, false otherwise.
  */
-export function isValidScriptureTSV(obj) {
+export function isValidScriptureTSV(obj: any): obj is ScriptureTSV {
   if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
     return false
   }
@@ -49,10 +56,10 @@ export function isValidScriptureTSV(obj) {
 
 /**
  * Validates if an object is of type TSVRow.
- * @param {any} row - The object to be validated.
- * @returns {boolean} - True if the object is a TSVRow, false otherwise.
+ *
+ * @returns True if the object is a TSVRow, false otherwise.
  */
-export function isValidTSVRow(row) {
+export function isValidTSVRow(row: any): row is TSVRow {
   if (typeof row !== 'object' || row === null) {
     return false
   }
@@ -60,7 +67,7 @@ export function isValidTSVRow(row) {
   // Validate ReferenceString (format 'chapter:verse' or 'chapter:verseStart-verseEnd')
   if (
     typeof row.Reference !== 'string' ||
-    !parseReferenceToList(row.Reference)
+    !parseReferenceToList(row.Reference).length
   ) {
     return false
   }
@@ -86,12 +93,13 @@ export function isValidTSVRow(row) {
 /**
  * Checks if a specific chapter and verse exist within a given ScriptureTSVs object.
  *
- * @param {ScriptureTSV} tsvs - The ScriptureTSVs object containing TSV data for each book chapter.
- * @param {ChapterNum} chapter - The chapter number to check for existence.
- * @param {VerseNum} verse - The verse number within the specified chapter to check for existence.
- * @returns {boolean} True if the specified chapter and verse exist in the ScriptureTSVs object, otherwise false.
+ * @returns True if the specified chapter and verse exist in the ScriptureTSVs object, otherwise false.
  */
-export const doesChapterVerseExistInTsvs = (tsvs, chapter, verse) => {
+export const doesChapterVerseExistInTsvs = (
+  tsvs: ScriptureTSV,
+  chapter: ChapterNum | ChapterNumString,
+  verse: VerseNum | VerseNumString
+): boolean => {
   if (isValidScriptureTSV(tsvs) && tsvs.hasOwnProperty(chapter)) {
     return tsvs[chapter].hasOwnProperty(verse)
   }
@@ -101,13 +109,14 @@ export const doesChapterVerseExistInTsvs = (tsvs, chapter, verse) => {
 /**
  * Checks if a specific item index at chapter:verse exists within a given ScriptureTSVs object.
  *
- * @param {ScriptureTSV} tsvs - The ScriptureTSVs object containing TSV data for each book chapter.
- * @param {ChapterNum} chapter - The chapter number to check for existence.
- * @param {VerseNum} verse - The verse number within the specified chapter to check for existence.
- * @param {number} itemIndex - The index of the item within the verse array to check for existence.
- * @returns {boolean} True if the specified chapter, verse, and item exist in the ScriptureTSVs object, otherwise false.
+ * @returns True if the specified chapter, verse, and item exist in the ScriptureTSVs object, otherwise false.
  */
-export const doesItemIndexExistInTsvs = (tsvs, chapter, verse, itemIndex) => {
+export const doesItemIndexExistInTsvs = (
+  tsvs: ScriptureTSV,
+  chapter: ChapterNum | ChapterNumString,
+  verse: VerseNum | VerseNumString,
+  itemIndex: number
+): boolean => {
   if (doesChapterVerseExistInTsvs(tsvs, chapter, verse)) {
     return (
       Array.isArray(tsvs[chapter][verse]) &&

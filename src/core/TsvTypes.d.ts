@@ -25,6 +25,8 @@ export type ItemIndex = number
 
 /**
  * A string in the format 'chapter:verse'.
+ * 'chapter' can be a number or the word 'front'
+ * 'verse'' can be a number, the word 'intro', or a verse range (verseStart-verseEnd)
  * Can be a reference range (i.e 1:2-3)
  * Can be multiple references (i.e 2:3;4:23)
  */
@@ -49,11 +51,11 @@ export type IDLength = number
 export type IDString = string
 
 /**
- * A string denoting a TSVRow id and reference range.
- * 
+ * A string denoting a TSVRow id and reference range that reflects a TSVRow's reference.
+ *
  * @example js3o_1:2-5
  * @example fg89_1:2;2:3
- * 
+ *
  */
 export type ReferenceRangeTag = string
 
@@ -92,10 +94,10 @@ export interface ScriptureTSV {
 }
 
 export type ReferenceRangeOperation = (
-  verseArray: TSVRow[], 
-  refRangeTag: ReferenceRangeTag, 
+  verseArray: TSVRow[],
+  refRangeTag: ReferenceRangeTag,
   ...restParams: any[]
-) => TSVRow[];
+) => TSVRow[]
 
 /**
  * An object representing the frequency index of unique values and value lengths for each column in a list of TSVRow items.

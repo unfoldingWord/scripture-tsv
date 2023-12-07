@@ -7,44 +7,235 @@ import {
   removeReferenceRangeDuplicates,
   tsvsObjectToFileString,
 } from './tsvDataActions'
-import { ScriptureTSV, TSVRow } from './TsvTypes'
+import { ScriptureTSV, TSVRow, UpdatedRowValue } from './TsvTypes'
 
-// Sample data
-const tsvs: ScriptureTSV = {
-  1: {
-    1: [
-      { Reference: '1:1', ID: 'df78', Text: 'In the beginning' },
-      { Reference: '1:1', ID: 'df8g', Text: 'Different' },
-    ],
-    2: [{ Reference: '1:2', ID: 'cvb8', Text: 'God created' }],
-  },
-}
+describe('TSV Data Actions', () => {
+  describe('addTsvRow', () => {
+    const sampleScriptureTSV: ScriptureTSV = {
+      '1': { '1': [{ Reference: '1:1', ID: 'a123' }] },
+    }
+    const newItem: TSVRow = { Reference: '1:1', ID: 'b234' }
 
-const newItem: TSVRow = {
-  Reference: '1:1',
-  ID: 'rtet',
-  Text: 'idk',
-}
+    it('should add a new TSV row at the specified chapter and verse', () => {
+      const updatedTsvs = addTsvRow(sampleScriptureTSV, newItem, 1, 1, 0)
+      expect(updatedTsvs['1']['1'][1]).toEqual(newItem)
+    })
 
-describe('TSV Operations', () => {
-  test('addTsvRow adds a new TSV item', () => {
-    const result = addTsvRow(tsvs, newItem, 1, 1, 1)
-    expect(result[1][1][2]).toEqual(newItem)
+    it('should throw an error for invalid new row input', () => {
+      const invalidNewItem = { Reference: '1:1' } // Missing ID
+      expect(() =>
+        addTsvRow(sampleScriptureTSV, invalidNewItem as TSVRow, 1, 1, 0)
+      ).toThrow('Invalid new row input!')
+    })
   })
 
-  test('deleteTsvRow deletes a TSV item', () => {
-    const result = deleteTsvRow(tsvs, 1, 1, 0)
-    expect(result[1][1]).toHaveLength(1)
+  describe('deleteTsvRow', () => {
+    const sampleScriptureTSV: ScriptureTSV = {
+      '1': {
+        '1': [
+          { Reference: '1:1', ID: 'a123' },
+          { Reference: '1:1', ID: 'b234' },
+        ],
+      },
+    }
+
+    it('should delete a TSV row at the specified chapter, verse, and itemIndex', () => {
+      const updatedTsvs = deleteTsvRow(sampleScriptureTSV, 1, 1, 0)
+      expect(updatedTsvs['1']['1']).toHaveLength(1)
+      expect(updatedTsvs['1']['1'][0].ID).toBe('b234')
+    })
+
+    it('should throw an error for non-existing item index', () => {
+      expect(() => deleteTsvRow(sampleScriptureTSV, 1, 1, 2)).toThrow()
+    })
   })
 
-  test('updateTsvRow updates a TSV item', () => {
-    const result = updateTsvRow(tsvs, newItem, 1, 1, 0)
-    expect(result[1][1][0]).toEqual(newItem)
+  describe('deleteTsvRow with Reference Range', () => {
+    const sampleScriptureTSV: ScriptureTSV = {
+      '1': {
+        '1': [
+          { Reference: '1:1-2', ID: 'a123', _referenceRange: 'a123_1:1-2' },
+        ],
+        '2': [
+          { Reference: '1:1-2', ID: 'a123', _referenceRange: 'a123_1:1-2' },
+          { Reference: '1:2;2:2', ID: 'b123', _referenceRange: 'b123_1:2;2:2' },
+        ],
+      },
+      '2': {
+        '1': [{ Reference: '2:1', ID: 'c345' }],
+        '2': [
+          { Reference: '1:2;2:2', ID: 'b123', _referenceRange: 'b123_1:2;2:2' },
+        ],
+      },
+    }
+
+    it('should delete TSV rows within the specified reference range', () => {
+      const updatedTsvs = deleteTsvRow(sampleScriptureTSV, 1, 1, 0)
+      expect(updatedTsvs['1']['1']).toHaveLength(0)
+      expect(updatedTsvs['1']['2']).toHaveLength(1)
+    })
+
+    it('should delete TSV rows within the reference range with semicolon', () => {
+      const updatedTsvs = deleteTsvRow(sampleScriptureTSV, 1, 2, 1)
+      expect(updatedTsvs['1']['2']).toHaveLength(1)
+      expect(updatedTsvs['2']['2']).toHaveLength(0)
+    })
+
+    it('should only delete rows within the specified chapter and verse', () => {
+      const updatedTsvs = deleteTsvRow(sampleScriptureTSV, 1, 1, 0)
+      expect(updatedTsvs['2']['1']).toHaveLength(1)
+    })
+
+    it('should throw an error if the specified index does not exist in the chapter and verse', () => {
+      expect(() => deleteTsvRow(sampleScriptureTSV, 1, 1, 2)).toThrow()
+    })
   })
 
-  test('moveTsvRow moves a TSV item', () => {
-    const result = moveTsvRow(tsvs, 1, 1, 0, 1)
-    expect(result[1][1][1]).toEqual(tsvs[1][1][0])
+  describe('updateTsvRow', () => {
+    const sampleScriptureTSV: ScriptureTSV = {
+      '1': { '1': [{ Reference: '1:1', ID: 'a123' }] },
+    }
+    const updatedValue: UpdatedRowValue = { OtherField: 'Updated' }
+
+    it('should update a TSV row at the specified index with new values', () => {
+      const updatedTsvs = updateTsvRow(
+        sampleScriptureTSV,
+        updatedValue,
+        1,
+        1,
+        0
+      )
+      expect(updatedTsvs['1']['1'][0].OtherField).toBe('Updated')
+    })
+  })
+
+  describe('updateTsvRow with Reference Range', () => {
+    const sampleScriptureTSV: ScriptureTSV = {
+      '1': {
+        '1': [
+          { Reference: '1:1-2', ID: 'a123', _referenceRange: 'a123_1:1-2' },
+        ],
+        '2': [
+          { Reference: '1:1-2', ID: 'a123', _referenceRange: 'a123_1:1-2' },
+        ],
+      },
+      '2': {
+        '1': [{ Reference: '2:1', ID: 'b234' }],
+      },
+    }
+    const updatedValue: UpdatedRowValue = { ExtraField: 'Updated' }
+
+    it('should update all TSV rows within the specified reference range', () => {
+      const updatedTsvs = updateTsvRow(
+        sampleScriptureTSV,
+        updatedValue,
+        1,
+        1,
+        0
+      )
+      expect(updatedTsvs['1']['1'][0].ExtraField).toBe('Updated')
+      expect(updatedTsvs['1']['2'][0].ExtraField).toBe('Updated')
+    })
+
+    it('should only update rows within the specified chapter and verse', () => {
+      const updatedTsvs = updateTsvRow(
+        sampleScriptureTSV,
+        updatedValue,
+        1,
+        1,
+        0
+      )
+      expect(updatedTsvs['2']['1'][0].ExtraField).toBeUndefined()
+    })
+
+    it('should throw an error if the updated row becomes invalid', () => {
+      const invalidUpdatedValue: UpdatedRowValue = { ID: '123' } // Invalid ID format
+      expect(() =>
+        updateTsvRow(sampleScriptureTSV, invalidUpdatedValue, 1, 1, 0)
+      ).toThrow('Invalid new row input!')
+    })
+  })
+
+  describe('moveTsvRow', () => {
+    const sampleScriptureTSV: ScriptureTSV = {
+      '1': {
+        '1': [
+          { Reference: '1:1', ID: 'a123' },
+          { Reference: '1:1', ID: 'b234' },
+        ],
+      },
+    }
+
+    it('should move a TSV row from one index to another', () => {
+      const updatedTsvs = moveTsvRow(sampleScriptureTSV, 1, 1, 0, 1)
+      expect(updatedTsvs['1']['1'][0].ID).toBe('b234')
+      expect(updatedTsvs['1']['1'][1].ID).toBe('a123')
+    })
+  })
+
+  describe('tsvsObjectToFileString', () => {
+    it('should convert a valid ScriptureTSV object to a TSV file string', () => {
+      const sampleScriptureTSV: ScriptureTSV = {
+        '1': {
+          '1': [
+            {
+              Reference: '1:1',
+              ID: 'df78',
+              Text: 'In the beginning',
+              _referenceRange: '1:1-1:2',
+            },
+          ],
+          '2': [{ Reference: '1:2', ID: 'cvb8', Text: 'God created' }],
+        },
+      }
+      const expected = `Reference\tID\tText\n1:1\tdf78\tIn the beginning\n1:2\tcvb8\tGod created`
+      expect(tsvsObjectToFileString(sampleScriptureTSV)).toBe(expected)
+    })
+
+    it('should remove duplicate rows based on reference ranges', () => {
+      const sampleScriptureTSV: ScriptureTSV = {
+        '1': {
+          '1': [
+            {
+              Reference: '1:1',
+              ID: 'df78',
+              Text: 'In the beginning',
+              _referenceRange: '1:1-1:2',
+            },
+          ],
+          '2': [
+            {
+              Reference: '1:2',
+              ID: 'df78',
+              Text: 'In the beginning',
+              _referenceRange: '1:1-1:2',
+            },
+          ],
+        },
+      }
+      const expected = `Reference\tID\tText\n1:1\tdf78\tIn the beginning`
+      expect(tsvsObjectToFileString(sampleScriptureTSV)).toBe(expected)
+    })
+
+    it('should remove unnecessary columns like Chapter, Verse, Book, and markdown', () => {
+      const sampleScriptureTSV: ScriptureTSV = {
+        '1': {
+          '1': [
+            {
+              Reference: '1:1',
+              ID: 'df78',
+              Text: 'In the beginning',
+              Book: 'Genesis',
+              Chapter: '1',
+              Verse: '1',
+              markdown: '###',
+            },
+          ],
+        },
+      }
+      const expected = `Reference\tID\tText\n1:1\tdf78\tIn the beginning`
+      expect(tsvsObjectToFileString(sampleScriptureTSV)).toBe(expected)
+    })
   })
 
   test('arrayMove moves an element in an array', () => {
@@ -71,17 +262,5 @@ describe('TSV Operations', () => {
     const result = removeReferenceRangeDuplicates(tsvItems)
     expect(result).toHaveLength(1)
     expect(result[0].ID).toEqual('f89s')
-  })
-
-  test('tsvsToFileString converts tsvsObject object to file string', () => {
-    const result = tsvsObjectToFileString(tsvs)
-    const expected = `Reference ID    Text
-    1:1       df78    In the beginning
-    1:1       df8g    Different
-    1:2       cvb8    God created`
-    const WHITESPACE = /\s+/g
-    expect(result.replace(WHITESPACE, '')).toEqual(
-      expected.replace(WHITESPACE, '')
-    )
   })
 })
