@@ -18,11 +18,13 @@ import '../../core/TsvTypes.js'
  *
  * Users of this library should be able to look at this sandbox and have an idea
  * of how to use each part of this library.
+ *
+ * This is the same as the code that will go in the MD file, but this is a
+ * workaround so that Styleguide will display this example.
  */
 const chapter = 1
 const verse = 2
 const itemIndex = 1
-
 const columnsFilter = ['Reference', 'Chapter', 'Verse', 'SupportReference']
 
 const AddTsvRow = () => {
@@ -48,7 +50,6 @@ const AddTsvRow = () => {
       const { chapter: inputChapter, verse: inputVerse } =
         getChapterVerse(Reference)
       if (inputChapter !== chapter || inputVerse !== verse) {
-        // Todo: Do we then change the app's reference? Maybe yes
         const newTsvs = onTsvAdd(row, inputChapter, inputVerse, 0)
         console.log(tsvsObjectToFileString(newTsvs))
         return

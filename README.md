@@ -91,6 +91,7 @@
 - [React.js](https://reactjs.org/)
 - [Material UI](https://mui.com/material-ui/)
 - [Vite](https://vitejs.dev/)
+- [React Styleguidist](https://react-styleguidist.js.org/)
 
 <p align="right"><a href="#top">back to top</a></p>
 
@@ -132,22 +133,35 @@ Things you need to use the software and how to install them.
    yarn install
    ```
 
-3. Run the app
+### Running the Vite Sandbox
 
-   ```js
+This library has vite installed to use a sandbox for quick development. The vite application will run whatever code is in `src/App.jsx`
+
+1. Edit the `App.jsx` file to contain whatever code you want to test
+2. Run the Vite sandbox by running:
+   ```sh
    npm run dev
    ```
 
-   or
+### Using & Running Styleguide
 
-   ```js
-   yarn dev
+1. To run a local copy of the styleguide, run
+
+   ```sh
+   npm run styleguide
    ```
 
-4. Point browser to `localhost:3000`
-5. Create a branch to contain your changes.
-6. Make changes, commit, and push to your branch.
-7. When changes are complete, create Pull Request (PR) and request they be reviewed and merged.
+2. To build the styleguide into a folder called `styleguide`, run
+
+   ```js
+   npm run styleguide:build
+   ```
+
+### Contributing
+
+1. Create a branch to contain your changes.
+2. Make changes, commit, and push to your branch.
+3. When changes are complete, create Pull Request (PR) and request they be reviewed and merged.
 
 <p align="right"><a href="#top">back to top</a></p>
 
