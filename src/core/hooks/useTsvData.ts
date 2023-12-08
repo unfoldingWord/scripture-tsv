@@ -9,25 +9,36 @@ import {
   moveTsvRow,
   tsvsObjectToFileString,
 } from '../tsvDataActions'
-import '../TsvTypes'
+import {
+  ScriptureTSV,
+  ItemIndex,
+  ChapterNum,
+  VerseNum,
+  SetContentFunction,
+  TSVRow,
+} from '../TsvTypes'
 
-/**
- * @typedef {Object} TSVContentAndReference
- * @property {ScriptureTSV} tsvs - Initial TSVs state.
- * @property {ItemIndex} itemIndex - Default item index.
- * @property {ChapterNum} chapter - Default chapter.
- * @property {VerseNum} verse - Default verse.
- * @property {SetContentFunction} setContent - Function to set the content.
- */
+interface TSVContentAndReference {
+  tsvs: ScriptureTSV
+  itemIndex: ItemIndex
+  chapter: ChapterNum
+  verse: VerseNum
+  setContent: SetContentFunction
+}
 
-/**
- * @typedef {Object} UseTsvDataReturn
- * @property {Function} onTsvAdd - Function to add a new TSV row.
- * @property {Function} onTsvDelete - Function to delete a TSV row.
- * @property {Function} onTsvEdit - Function to edit a TSV row.
- * @property {Function} onTsvMoveBefore - Function to move a TSV row up.
- * @property {Function} onTsvMoveAfter - Function to move a TSV row down.
- */
+interface TSVDataOperations {
+  getTsvRow: (itemIndex?: ItemIndex) => TSVRow | null
+  onTsvAdd: (
+    newItem: TSVRow,
+    chapter: ChapterNum,
+    verse: VerseNum,
+    itemIndex?: ItemIndex
+  ) => ScriptureTSV | null
+  onTsvDelete: (itemIndex?: ItemIndex) => ScriptureTSV | null
+  onTsvEdit: (newItem: TSVRow, itemIndex?: ItemIndex) => void
+  onTsvMoveBefore: (itemIndex?: ItemIndex) => ScriptureTSV | null
+  onTsvMoveAfter: (itemIndex?: ItemIndex) => ScriptureTSV | null
+}
 
 /**
  * @description React hook that stores a ScriptureTSV in state.
@@ -35,8 +46,8 @@ import '../TsvTypes'
  * tsvDataActions functions. On edit, it also converts the
  * new TSVs to a string format that can be saved to a file, and then passes
  * this string to the given `setContent` function.
- * @param {TSVContentAndReference} options - Options for initializing the hook.
- * @returns {UseTsvDataReturn} - Functions for managing TSV state and content.
+ *
+ * @returns Functions for managing TSV state and content.
  */
 export default function useTsvData({
   tsvs,
@@ -44,8 +55,8 @@ export default function useTsvData({
   chapter: defaultChapter,
   verse: defaultVerse,
   setContent,
-}) {
-  const [tsvsState, setTsvsState] = useState(null)
+}: TSVContentAndReference): TSVDataOperations {
+  const [tsvsState, setTsvsState] = useState<ScriptureTSV | null>(null)
 
   // Todo: It would probably be more helpful if we fetched TSVs directly
   // here instead of passing them in as a prop
@@ -55,9 +66,12 @@ export default function useTsvData({
     }
   }, [{ ...tsvs }, defaultChapter, defaultVerse])
 
-  function getTsvRow(itemIndex) {
-    itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
+  /**
+   * @description Retrieves a row item from the ScriptureTSV state
+   */
+  function getTsvRow(itemIndex: ItemIndex = defaultItemIndex): TSVRow | null {
     if (
+      tsvsState &&
       doesItemIndexExistInTsvs(
         tsvsState,
         defaultChapter,
@@ -71,32 +85,30 @@ export default function useTsvData({
   }
 
   /**
-   * @todo Since we aren't checking for chapter, verse, we should force
-   * these types
    * @description Adds a row item to the ScriptureTSV state
-   * @param {TSVRow} newItem
-   * @param {ChapterNum} chapter
-   * @param {VerseNum} verse
-   * @param {ItemIndex} itemIndex
    */
-  function onTsvAdd(newItem, chapter, verse, itemIndex) {
+  function onTsvAdd(
+    newItem: TSVRow,
+    chapter: ChapterNum,
+    verse: VerseNum,
+    itemIndex: ItemIndex = defaultItemIndex
+  ): ScriptureTSV | null {
     if (tsvsState) {
-      itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = addTsvRow(tsvsState, newItem, chapter, verse, itemIndex)
       setTsvsState(newTsvs)
-      console.log(newTsvs)
       return newTsvs
     }
+    return null
   }
 
   /**
    * @description Deletes a row item from ScriptureTSV state at current chapter/verse
    * given item index
-   * @param {ItemIndex} itemIndex
    */
-  function onTsvDelete(itemIndex) {
+  function onTsvDelete(
+    itemIndex: ItemIndex = defaultItemIndex
+  ): ScriptureTSV | null {
     if (tsvsState) {
-      itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = deleteTsvRow(
         tsvsState,
         defaultChapter,
@@ -106,17 +118,18 @@ export default function useTsvData({
       setTsvsState(newTsvs)
       return newTsvs
     }
+    return null
   }
 
   /**
    * @description Edits a row item in the ScriptureTSV state at current chapter/verse
-   * given index
-   * @param {TSVRow} newItem
-   * @param {ItemIndex} itemIndex
+   * given index and sets content of parent application
    */
-  function onTsvEdit(newItem, itemIndex) {
+  function onTsvEdit(
+    newItem: TSVRow,
+    itemIndex: ItemIndex = defaultItemIndex
+  ): void {
     if (tsvsState) {
-      itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = updateTsvRow(
         tsvsState,
         newItem,
@@ -125,18 +138,17 @@ export default function useTsvData({
         itemIndex
       )
       setTsvsState(newTsvs)
-
       setContent(tsvsObjectToFileString(newTsvs))
     }
   }
 
   /**
    * @description Move a TSV row one row before its current index
-   * @param {ItemIndex} itemIndex
    */
-  function onTsvMoveBefore(itemIndex) {
+  function onTsvMoveBefore(
+    itemIndex: ItemIndex = defaultItemIndex
+  ): ScriptureTSV | null {
     if (tsvsState) {
-      itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = moveTsvRow(
         tsvsState,
         defaultChapter,
@@ -147,15 +159,17 @@ export default function useTsvData({
       setTsvsState(newTsvs)
       return newTsvs
     }
+    return null
   }
 
   /**
    * @description Move a TSV row one row after its current index
    * @param {ItemIndex} itemIndex
    */
-  function onTsvMoveAfter(itemIndex) {
+  function onTsvMoveAfter(
+    itemIndex: ItemIndex = defaultItemIndex
+  ): ScriptureTSV | null {
     if (tsvsState) {
-      itemIndex = typeof itemIndex == 'number' ? itemIndex : defaultItemIndex
       const newTsvs = moveTsvRow(
         tsvsState,
         defaultChapter,
@@ -166,6 +180,7 @@ export default function useTsvData({
       setTsvsState(newTsvs)
       return newTsvs
     }
+    return null
   }
 
   return {
