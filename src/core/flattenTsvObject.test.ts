@@ -2,8 +2,8 @@ import flattenTsvObject from './flattenTsvObject'
 import { ScriptureTSV, TSVRow } from './TsvTypes'
 
 // Fixtures
-import tsvsObject from '../fixtures/tsvsObject.json'
-import tsvsObjectWithVerseSpan from '../fixtures/tsvsObjectWithVerseSpan.json'
+import tsvsObject from '../assets/tsvsObject.json'
+import tsvsObjectWithVerseSpan from '../assets/tsvsObjectWithVerseSpan.json'
 
 describe('flattenTsvObject', () => {
   let result: TSVRow[]
