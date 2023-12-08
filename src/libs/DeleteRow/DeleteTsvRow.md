@@ -19,18 +19,18 @@ of the `scripture-tsv` library to add a TSV element to an existing TSVs object
 
 - **tsvsObjectToFileString**
 
-```jsx
-import { useState } from 'react'
+```tsx
 import useTsvData from '../../core/hooks/useTsvData'
 import DeleteRowButton from './components/DeleteRowButton'
 import DeleteRowDialog from './components/DeleteRowDialog'
 import { titusTsvs } from '../../assets/titusTsvs'
+import { ChapterNum, VerseNum, ItemIndex } from '../../core/TsvTypes'
 
-const chapter = 1
-const verse = 1
-const itemIndex = 0
+const chapter: ChapterNum = 1
+const verse: VerseNum = 1
+const itemIndex: ItemIndex = 0
 
-const Example = () => {
+const Example: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const { getTsvRow, onTsvDelete } = useTsvData({

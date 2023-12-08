@@ -4,6 +4,7 @@ import useTsvData from '../../core/hooks/useTsvData'
 import DeleteRowButton from './components/DeleteRowButton'
 import DeleteRowDialog from './components/DeleteRowDialog'
 import { titusTsvs } from '../../assets/titusTsvs'
+import { ChapterNum, VerseNum, ItemIndex } from '../../core/TsvTypes'
 
 /**
  * @description This file is meant to act as a sandbox to display the content
@@ -15,11 +16,11 @@ import { titusTsvs } from '../../assets/titusTsvs'
  * of how to use each part of this library.
  */
 
-const chapter = 1
-const verse = 1
-const itemIndex = 0
+const chapter: ChapterNum = 1
+const verse: VerseNum = 1
+const itemIndex: ItemIndex = 0
 
-const DeleteTsvRow = () => {
+const DeleteTsvRow: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const { getTsvRow, onTsvDelete } = useTsvData({

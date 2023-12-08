@@ -23,7 +23,7 @@ interface TSVContentAndReference {
   itemIndex: ItemIndex
   chapter: ChapterNum
   verse: VerseNum
-  setContent: SetContentFunction
+  setContent?: SetContentFunction
 }
 
 interface TSVDataOperations {
@@ -138,7 +138,7 @@ export default function useTsvData({
         itemIndex
       )
       setTsvsState(newTsvs)
-      setContent(tsvsObjectToFileString(newTsvs))
+      setContent?.(tsvsObjectToFileString(newTsvs))
     }
   }
 

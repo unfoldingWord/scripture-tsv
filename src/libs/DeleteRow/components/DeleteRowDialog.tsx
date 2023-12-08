@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {
   Button,
   Divider,
@@ -11,8 +10,18 @@ import {
 } from '@mui/material'
 
 import { isValidTSVRow } from '../../../core/scriptureTsvValidation'
+import { TSVRow } from '../../../core/TsvTypes'
 
-const DeleteRowDialog = ({
+interface DeleteRowDialogProps {
+  title?: string
+  open: boolean
+  onClose: () => void
+  onSubmit: () => void
+  currentRow: TSVRow | null
+  style?: React.CSSProperties
+}
+
+const DeleteRowDialog: React.FC<DeleteRowDialogProps> = ({
   title = 'Delete This TSV Item?',
   open,
   onClose,
@@ -20,7 +29,7 @@ const DeleteRowDialog = ({
   currentRow,
   style = {},
 }) => {
-  const renderedRowValue = ([columnName, value]) => (
+  const renderedRowValue = ([columnName, value]: [string, string]) => (
     <DialogContentText key={columnName} sx={{ mb: 1 }}>
       <strong>{columnName}: </strong>
       <span>{value}</span>
@@ -45,15 +54,13 @@ const DeleteRowDialog = ({
         </DialogContentText>
         <Divider />
         <br />
-        {!!currentRow
-          ? renderedTSVRowValuePairs
-          : 'No TSV Item Here to Delete! '}
+        {currentRow ? renderedTSVRowValuePairs : 'No TSV Item Here to Delete! '}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary" autoFocus>
           Cancel
         </Button>
-        {!!currentRow && (
+        {currentRow && (
           <Button onClick={onSubmit} color="error">
             Delete
           </Button>
@@ -61,21 +68,6 @@ const DeleteRowDialog = ({
       </DialogActions>
     </Dialog>
   )
-}
-
-DeleteRowDialog.propTypes = {
-  /** title that displays on tooltip when button is hovered */
-  title: PropTypes.string,
-  /** true if dialog is open, false otherwise */
-  open: PropTypes.bool,
-  /** callback function called when user closes dialog */
-  onClose: PropTypes.func,
-  /** callback function called when user click on the delete button */
-  onSubmit: PropTypes.func,
-  /** TSV Row Item that will be deleted */
-  currentRow: PropTypes.object,
-  /** style object for custom button styles */
-  style: PropTypes.object,
 }
 
 export default DeleteRowDialog

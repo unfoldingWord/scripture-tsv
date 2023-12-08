@@ -1,5 +1,4 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { ReactNode } from 'react'
 import {
   Button,
   Divider,
@@ -9,7 +8,16 @@ import {
   DialogContent,
 } from '@mui/material'
 
-const AddRowDialog = ({
+interface AddRowDialogProps {
+  title?: string
+  open: boolean
+  onClose: () => void
+  onSubmit: () => void
+  tsvForm: ReactNode
+  style?: React.CSSProperties
+}
+
+const AddRowDialog: React.FC<AddRowDialogProps> = ({
   title = 'Add Row',
   open,
   onClose,
@@ -26,6 +34,7 @@ const AddRowDialog = ({
       sx={{
         '& .MuiDialog-paper': {
           minWidth: '500px',
+          ...style,
         },
       }}
     >
@@ -45,19 +54,6 @@ const AddRowDialog = ({
       </DialogActions>
     </Dialog>
   )
-}
-
-AddRowDialog.propTypes = {
-  /** title that displays on tooltip when button is hovered */
-  title: PropTypes.string,
-  /** true if dialog is open, false otherwise */
-  open: PropTypes.bool,
-  /** callback function called when user closes dialog */
-  onClose: PropTypes.func,
-  /** callback function called when user click on the add button */
-  onSubmit: PropTypes.func,
-  /** style object for custom button styles */
-  style: PropTypes.object,
 }
 
 export default AddRowDialog

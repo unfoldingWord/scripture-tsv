@@ -22,7 +22,7 @@ of the `scripture-tsv` library to add a TSV element to an existing TSVs object
 - **getChapterVerse**
 - **tsvsObjectToFileString**
 
-```jsx
+```tsx
 import useTsvData from '../../core/hooks/useTsvData'
 import useAddTsv from './hooks/useAddTsv'
 import AddRowButton from './components/AddRowButton'
@@ -31,14 +31,31 @@ import AddRowForm from './components/AddRowForm'
 import { titusTsvs } from '../../assets/titusTsvs'
 import { getChapterVerse } from '../../core/tsvRowUtils'
 import { tsvsObjectToFileString } from '../../core/tsvDataActions'
-import '../../core/TsvTypes.js'
+import { TSVRow, ChapterNum, VerseNum, ItemIndex } from '../../core/TsvTypes'
 
-const chapter = 1
-const verse = 2
-const itemIndex = 1
-const columnsFilter = ['Reference', 'Chapter', 'Verse', 'SupportReference']
+/**
+ * @description This file is meant to act as a sandbox to display the content
+ * of the scripture-tsv library. Currently this sandbox creates an add TSV
+ * button that utilizes the custom hooks and utility functions contained in
+ * the application.
+ *
+ * Users of this library should be able to look at this sandbox and have an idea
+ * of how to use each part of this library.
+ *
+ * This is the same as the code that will go in the MD file, but this is a
+ * workaround so that Styleguide will display this example.
+ */
+const chapter: ChapterNum = 1
+const verse: VerseNum = 2
+const itemIndex: ItemIndex = 1
+const columnsFilter: string[] = [
+  'Reference',
+  'Chapter',
+  'Verse',
+  'SupportReference',
+]
 
-const Example = () => {
+const Example: React.FC = () => {
   const { onTsvAdd } = useTsvData({
     tsvs: titusTsvs,
     chapter,
@@ -49,26 +66,26 @@ const Example = () => {
   /**
    * Adds a row to a TSV (Tab-Separated Values) data set.
    *
-   * @param {TSVRow} row - The row to be added. Must contain a 'Reference' field formatted as 'chapter:verse'.
-   *
    * @throws {Error} Throws an error if reference or new row are not valid TSV data
    *
    * @todo Consider adding more validation for TSV properties as currently since it's quite generic.
    */
-  const addRowToTsv = row => {
-    const { Reference } = row
-    try {
-      const { chapter: inputChapter, verse: inputVerse } =
-        getChapterVerse(Reference)
-      if (inputChapter !== chapter || inputVerse !== verse) {
-        const newTsvs = onTsvAdd(row, inputChapter, inputVerse, 0)
-        console.log(tsvsObjectToFileString(newTsvs))
-        return
+  const addRowToTsv = (row: TSVRow | {}) => {
+    if ('Reference' in row) {
+      const { Reference } = row
+      try {
+        const { chapter: inputChapter, verse: inputVerse } =
+          getChapterVerse(Reference)
+        if (inputChapter !== chapter || inputVerse !== verse) {
+          const newTsvs = onTsvAdd(row, inputChapter, inputVerse, 0)
+          newTsvs && console.log(tsvsObjectToFileString(newTsvs))
+          return
+        }
+        const newTsvs = onTsvAdd(row, chapter, verse, itemIndex)
+        newTsvs && console.log(tsvsObjectToFileString(newTsvs))
+      } catch (error) {
+        console.error('Error while adding new TSV Row:', error)
       }
-      const newTsvs = onTsvAdd(row, chapter, verse, itemIndex)
-      console.log(tsvsObjectToFileString(newTsvs))
-    } catch (error) {
-      console.error('Error while adding new TSV Row:', error)
     }
   }
 
@@ -84,18 +101,24 @@ const Example = () => {
     tsvs: titusTsvs,
     chapter,
     verse,
-    itemIndex,
     columnsFilter,
     addRowToTsv,
   })
 
-  const tsvForm = (
-    <AddRowForm
-      newRow={newRow}
-      changeRowValue={changeRowValue}
-      columnsFilterOptions={columnsFilterOptions}
-    />
-  )
+  const tsvForm =
+    newRow &&
+    Object.keys(newRow).length === 0 &&
+    newRow.constructor === Object ? (
+      <AddRowForm
+        newRow={newRow as TSVRow}
+        changeRowValue={changeRowValue}
+        columnsFilterOptions={columnsFilterOptions}
+      />
+    ) : (
+      <>
+        <p>New Row has not been initialized!</p>
+      </>
+    )
 
   return (
     <div>
