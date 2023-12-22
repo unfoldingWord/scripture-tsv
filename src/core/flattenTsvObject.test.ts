@@ -1,5 +1,5 @@
 import flattenTsvObject from './flattenTsvObject'
-import { ScriptureTSV, TSVRow } from './TsvTypes'
+import type { ScriptureTSV, TSVRow } from './TsvTypes'
 
 // Fixtures
 import tsvsObject from '../assets/tsvsObject.json'

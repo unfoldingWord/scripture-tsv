@@ -45,17 +45,17 @@ import { TSVRow, ChapterNum, VerseNum, ItemIndex } from '../../core/TsvTypes'
  * This is the same as the code that will go in the MD file, but this is a
  * workaround so that Styleguide will display this example.
  */
-const chapter: ChapterNum = 1
-const verse: VerseNum = 2
-const itemIndex: ItemIndex = 1
-const columnsFilter: string[] = [
+const chapter = 1
+const verse = 2
+const itemIndex = 1
+const columnsFilter = [
   'Reference',
   'Chapter',
   'Verse',
   'SupportReference',
 ]
 
-const Example: React.FC = () => {
+const Example = () => {
   const { onTsvAdd } = useTsvData({
     tsvs: titusTsvs,
     chapter,
@@ -70,7 +70,7 @@ const Example: React.FC = () => {
    *
    * @todo Consider adding more validation for TSV properties as currently since it's quite generic.
    */
-  const addRowToTsv = (row: TSVRow | {}) => {
+  const addRowToTsv = row  => {
     if ('Reference' in row) {
       const { Reference } = row
       try {

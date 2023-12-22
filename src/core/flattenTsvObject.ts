@@ -1,4 +1,4 @@
-import { ScriptureTSV, TSVRow } from './TsvTypes'
+import type { ScriptureTSV, TSVRow } from './TsvTypes'
 
 /**
  * Compare function to sort verses.

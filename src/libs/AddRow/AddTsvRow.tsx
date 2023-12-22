@@ -84,7 +84,7 @@ const AddTsvRow: React.FC = () => {
 
   const tsvForm =
     newRow &&
-    Object.keys(newRow).length === 0 &&
+    Object.keys(newRow).length !== 0 &&
     newRow.constructor === Object ? (
       <AddRowForm
         newRow={newRow as TSVRow}

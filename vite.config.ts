@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import babel from '@rollup/plugin-babel'
 import typescript from '@rollup/plugin-typescript'
-import { typescriptPaths } from 'rollup-plugin-typescript-paths'
+// import { typescriptPaths } from 'rollup-plugin-typescript-paths'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -33,6 +34,11 @@ export default defineConfig(({ command }) => {
           ]
         : []),
     ],
+    test: {
+      globals: true,
+      environment: 'node',
+      include: ['src/**/*.test.ts'],
+    },
     optimizeDeps: {
       include: ['styleguidist'],
     },
@@ -40,10 +46,10 @@ export default defineConfig(({ command }) => {
       minify: false,
       reportCompressedSize: true,
       lib: {
-        entry: 'src/index.ts',
+        entry: resolve(__dirname, 'src/index.ts'),
         name: 'scripture-tsv',
-        fileName: 'main',
-        formats: ['es', 'cjs'],
+        fileName: format => (format === 'es' ? 'main.es.js' : 'main.cs.js'),
+        formats: ['cjs', 'es'],
       },
       rollupOptions: {
         external: [
@@ -57,9 +63,6 @@ export default defineConfig(({ command }) => {
           '@mui/styles',
         ],
         plugins: [
-          typescriptPaths({
-            preserveExtensions: true,
-          }),
           typescript({
             sourceMap: false,
             declaration: true,

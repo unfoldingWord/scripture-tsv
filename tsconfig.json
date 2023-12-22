@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "es6",
+    "outDir": "./dist",
     "types": ["vite/client", "node", "jest"],
     "lib": ["dom", "dom.iterable"],
     "allowJs": true,
