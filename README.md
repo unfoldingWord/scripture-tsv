@@ -130,7 +130,7 @@ Things you need to use the software and how to install them.
    or
 
    ```sh
-   yarn install
+   pnpm install
    ```
 
 ### Running the Vite Sandbox

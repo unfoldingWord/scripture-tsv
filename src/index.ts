@@ -18,4 +18,4 @@ export type {
   ScriptureTSV,
   ReferenceRangeOperation,
   RowsLengthIndex,
-} from './core/TsvTypes.d.ts'
+} from './core/TsvTypes'

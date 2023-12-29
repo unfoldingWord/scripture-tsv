@@ -1,0 +1,41 @@
+import { Meta } from '@storybook/addon-docs'
+import AddTsvRow from '../libs/AddRow/AddTsvRow'
+
+<Meta title="AddTsvRow" component={AddTsvRow} />
+
+### Add Row Example
+
+This is an example of how to use the UI elements, hooks, and utility functions of the `scripture-tsv` library to add a TSV element to an existing TSVs object.
+
+#### _UI_
+
+- **AddRowButton**
+- **AddRowDialog**
+- **AddRowForm**
+
+#### _Hooks_
+
+- **useTsvData**
+- **useAddTsv**
+
+#### _Core Functions_
+
+- **getChapterVerse**
+- **tsvsObjectToFileString**
+
+<iframe
+  src="https://codesandbox.io/embed/98jmw8?view=Editor+%2B+Preview&module=%2Fsrc%2FAddTsvRow.tsx"
+  style={{
+    width: '100%',
+    height: '700px',
+    outline: '1px solid #252525',
+    border: '0',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    marginBottom: 16,
+    zIndex: 100,
+  }}
+  title="add-tsv"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
