@@ -29,12 +29,14 @@ const DeleteRowDialog: React.FC<DeleteRowDialogProps> = ({
   currentRow,
   style = {},
 }) => {
-  const renderedRowValue = ([columnName, value]: [string, string]) => (
-    <DialogContentText key={columnName} sx={{ mb: 1 }}>
-      <strong>{columnName}: </strong>
-      <span>{value}</span>
-    </DialogContentText>
-  )
+  const renderedRowValue = ([columnName, value]: [string, string]) =>
+    // TODO: THIS IS A HACK... Implement dynamic column names
+    columnName !== '_referenceRange' ? (
+      <DialogContentText key={columnName} sx={{ mb: 1 }}>
+        <strong>{columnName}: </strong>
+        <span>{value}</span>
+      </DialogContentText>
+    ) : null
 
   const renderedTSVRowValuePairs = isValidTSVRow(currentRow)
     ? Object.entries(currentRow).map(renderedRowValue)
