@@ -2,6 +2,30 @@ import { useState, useMemo } from 'react'
 import { rowGenerate, getColumnsFilterOptions } from '../../../core/tsvRowUtils'
 import flattenObject from '../../../core/flattenTsvObject'
 import { isValidScriptureTSV } from '../../../core/scriptureTsvValidation'
+import {
+  ScriptureTSV,
+  ChapterNum,
+  VerseNum,
+  TSVRow,
+} from '../../../core/TsvTypes'
+
+interface UseAddTsvProps {
+  tsvs: ScriptureTSV
+  chapter: ChapterNum
+  verse: VerseNum
+  columnsFilter: string[]
+  addRowToTsv: (newRow: TSVRow | {}) => void
+}
+
+interface UseAddTsvReturn {
+  isAddRowDialogOpen: boolean
+  openAddRowDialog: () => void
+  closeAddRowDialog: () => void
+  submitRowEdits: () => void
+  newRow: TSVRow | {}
+  changeRowValue: (columnName: string, newValue: string) => void
+  columnsFilterOptions: { [key: string]: string[] } | {}
+}
 
 /**
 @todo It seems that it's creating a small module for users to construct
@@ -35,15 +59,16 @@ that this module could be simplified by:
   changeRowValue       : State NewRow => ColumnName x NewValue -> undefined
 
 */
-const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
+const useAddTsv = ({
+  tsvs,
+  chapter,
+  verse,
+  columnsFilter,
+  addRowToTsv,
+}: UseAddTsvProps): UseAddTsvReturn => {
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false)
-  const [newRow, setNewRow] = useState({})
+  const [newRow, setNewRow] = useState<TSVRow | {}>({})
 
-  /** 
-  @todo could you give some context on what the schema is for
-  columnNames and how it's used?
-  */
-  // populate columnsFilterOptions when ready
   const columnsFilterOptions = useMemo(() => {
     if (!isValidScriptureTSV(tsvs)) return {}
 
@@ -56,6 +81,7 @@ const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
 
       return getColumnsFilterOptions(columnNamesToFilter, allItems)
     }
+    return {}
   }, [columnsFilter, tsvs])
 
   const openAddRowDialog = () => {
@@ -74,14 +100,8 @@ const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
     setNewRow({})
   }
 
-  /**
-   * @todo This allows users to input whatever value they want...
-   * How do we handle things that have certain restrictions like references?
-   */
-  const changeRowValue = (columnName, newValue) => {
-    setNewRow(prevRow => {
-      return { ...prevRow, [columnName]: newValue }
-    })
+  const changeRowValue = (columnName: string, newValue: string) => {
+    setNewRow(prevRow => ({ ...prevRow, [columnName]: newValue }))
   }
 
   return {
@@ -94,8 +114,5 @@ const useAddTsv = ({ tsvs, chapter, verse, columnsFilter, addRowToTsv }) => {
     columnsFilterOptions,
   }
 }
-
-/** @todo is this needed? */
-useAddTsv.propTypes = {}
 
 export default useAddTsv

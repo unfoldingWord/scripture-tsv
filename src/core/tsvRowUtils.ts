@@ -1,18 +1,28 @@
+import { parseReferenceToList } from 'bible-reference-range'
 import flattenObject from './flattenTsvObject'
 import { isValidScriptureTSV, isValidTSVRow } from './scriptureTsvValidation'
-import './TsvTypes'
-import { parseReferenceToList } from 'bible-reference-range'
+import {
+  ReferenceString,
+  TSVReference,
+  RowsLengthIndex,
+  TSVRow,
+  ScriptureTSV,
+  IDString,
+  IDLength,
+  ChapterNum,
+  VerseNum,
+} from './TsvTypes'
 
 /**
  * Extracts chapter and verse from string in a chapter:verse format.
  * If string does not adhere to chapter:verse format, throws an error.
- * @param {ReferenceString} referenceString The reference string to parse
  *
- * @returns {TSVReference} - parsed chapter/verse
- *
- * @throws {Error} Throws an error if the string is not a ReferenceString
+ * @returns parsed chapter/verse
+ * @throws Throws an error if the string is not a ReferenceString
  */
-export const getChapterVerse = referenceString => {
+export const getChapterVerse = (
+  referenceString: ReferenceString
+): TSVReference => {
   const verseChunks = parseReferenceToList(referenceString)
 
   if (!verseChunks) {
@@ -28,23 +38,21 @@ export const getChapterVerse = referenceString => {
 /**
  * Calculates the frequency index of unique values and value lengths for each column in a list of TSVRow items.
  *
- * @param {Array.<TSVRow>} allItems - An array of TSVRow objects.
- *
- * @returns {RowsLengthIndex}
- *
  * @example
  *   let allItems = [{A: '1', B: 'x'}, {A: '2', B: 'y'}, {A: '1', B: 'z'}];
  *   let { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems);
  *      rowsIndex => { A: { '1': 2, '2': 1 }, B: { 'x': 1, 'y': 1, 'z': 1 } }
  *      lengthIndex => { A: { '1': 3 }, B: { '1': 3 } }
  */
-const calculateRowsLengthIndex = allItems => {
+export const calculateRowsLengthIndex = (
+  allItems: TSVRow[]
+): RowsLengthIndex => {
   if (!Array.isArray(allItems)) {
     throw new Error('allItems is not of type array!')
   }
 
-  let rowsIndex = {}
-  let lengthIndex = {}
+  let rowsIndex: { [column: string]: { [value: string]: number } } = {}
+  let lengthIndex: { [column: string]: { [valueLength: number]: number } } = {}
 
   allItems.forEach(item => {
     if (!isValidTSVRow(item)) return
@@ -85,67 +93,69 @@ const calculateRowsLengthIndex = allItems => {
  * NOTE:
  * - If `tsvs` is empty or not provided, an empty object is returned.
  *
- * @param {ScriptureTSV} tsvs - The existing TSVs to base the new row on.
- * @param {ChapterNum} chapter - Represents the Bible chapter we are interested in.
- * @param {VerseNum} verse - Represents the Bible verse we are interested in.
- *
- * @returns {TSVRow} - New row object with prefilled column names and some pre-filled values.
+ * @returns New row object with prefilled column names and some pre-filled values.
  */
-export const rowGenerate = (tsvs, chapter, verse) => {
-  if (!isValidScriptureTSV(tsvs)) return {}
+export const rowGenerate = (
+  tsvs: ScriptureTSV,
+  chapter: ChapterNum,
+  verse: VerseNum
+): TSVRow => {
+  const emptyTSVRow = { Reference: '', ID: '' }
+  if (!isValidScriptureTSV(tsvs)) return emptyTSVRow
   const allItems = flattenObject(tsvs)
-  if (!allItems.length) return {}
+  if (!allItems.length) return emptyTSVRow
 
   const { rowsIndex, lengthIndex } = calculateRowsLengthIndex(allItems)
-  if (Object.keys(rowsIndex).length === 0) return {}
+  if (Object.keys(rowsIndex).length === 0) return emptyTSVRow
 
   // If tsvs is valid, items not empty, and rowsIndex exists then items are valid
-  const rowData = allItems[0]
-  const newRow = {}
+  const rowData: TSVRow = allItems[0]
 
-  Object.entries(rowData).forEach(([column, value]) => {
-    if (column === 'Reference') {
-      newRow[column] = `${chapter}:${verse}`
-      return
-    }
-    if (column === 'ID') {
-      const allIds = Object.keys(rowsIndex[column])
-      newRow[column] = generateRandomUID(allIds)
-      return
-    }
-    const values = Object.keys(rowsIndex[column]).length
-    const valuesRatio = values / allItems.length
-    const shouldDuplicateValue = valuesRatio < 0.65 // If the value is reused many times then it should be duplicated.
+  return Object.entries(rowData).reduce(
+    (rowAcc: TSVRow, [column, value]) => {
+      if (column === 'Reference') {
+        rowAcc[column] = `${chapter}:${verse}`
+      } else if (column === 'ID') {
+        const allIds: IDString[] = Object.keys(rowsIndex[column]) as IDString[]
+        rowAcc[column] = generateRandomUID(allIds)
+      } else {
+        const values = Object.keys(rowsIndex[column]).length
+        const valuesRatio = values / allItems.length
+        const shouldDuplicateValue = valuesRatio < 0.65 // If the value is reused many times then it should be duplicated.
+        const valuesLengths = Object.keys(lengthIndex[column])
+        const needRandomId = valuesRatio > 0.99 && valuesLengths.length <= 2
 
-    const valuesLengths = Object.keys(lengthIndex[column])
-    const needRandomId = valuesRatio > 0.99 && valuesLengths.length <= 2
-
-    let newValue = ''
-    if (shouldDuplicateValue) {
-      newValue = value
-    } else if (needRandomId) {
-      const allIds = Object.keys(rowsIndex[column])
-      newValue = generateRandomUID(allIds)
-    }
-    newRow[column] = newValue
-  })
-
-  return { ...newRow }
+        if (shouldDuplicateValue) {
+          rowAcc[column] = value
+        } else if (needRandomId) {
+          const allIds: IDString[] = Object.keys(
+            rowsIndex[column]
+          ) as IDString[]
+          rowAcc[column] = generateRandomUID(allIds)
+        } else {
+          rowAcc[column] = ''
+        }
+      }
+      return rowAcc
+    },
+    { Reference: '', ID: '' } as TSVRow
+  )
 }
 
 /**
  * Generates a new unique ID for a tsv given already used IDs
  *
- * @param {Array.<TSVRow>} allIds list of IDs that are already in use
- * @param {IDLength} defaultLength default length of the ID to create
- * @returns {IDString} new unique ID for a new tsv row
+ * @returns new unique ID for a new tsv row
  */
-export const generateRandomUID = (allIds = [], defaultLength = 4) => {
-  let sampleID = allIds[0]
-  let length = sampleID?.length || defaultLength
+export const generateRandomUID = (
+  allIds: IDString[] = [],
+  defaultLength: IDLength = 4
+): IDString => {
+  let sampleID: IDString = allIds[0]
+  let length: IDLength = sampleID?.length || defaultLength
   let notUnique = true
   let counter = 0
-  let newID = ''
+  let newID: IDString = ''
   const UNIQUE_COUNTER_THRESHOLD = 1000
 
   while (notUnique && counter < UNIQUE_COUNTER_THRESHOLD) {
@@ -172,53 +182,23 @@ export const generateRandomUID = (allIds = [], defaultLength = 4) => {
  * NOTE:
  * - If the specified length is greater than 9, it will be capped at 9.
  *
- * @param {IDLength} length - The desired length of the ID. If greater than 9, it will be set to 9.
- *
- * @returns {IDString} - The randomly generated ID.
+ * @returns The randomly generated ID.
  *
  * @example
  *   const id = randomId(5); // Outputs something like 'a3f5z'
  */
-const randomId = length => {
-  // get the initial letter first
-  const letters = [
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z',
-  ]
+export const randomId = (length: IDLength): IDString => {
+  const letters = 'abcdefghijklmnopqrstuvwxyz'
   const random = Math.floor(Math.random() * letters.length)
-  const number = Math.random() // 0.9394456857981651
+  const number = Math.random()
+    .toString(36)
+    .substring(2, 2 + length - 1)
 
-  // number.toString(36); // '0.xtis06h6'
   if (length > 9) {
     length = 9
   }
 
-  const id = letters[random] + number.toString(36).substring(2, 2 + length - 1) // 'xtis06h6'
-  return id
+  return letters[random] + number.substring(0, length - 1)
 }
 
 /**
@@ -229,10 +209,7 @@ const randomId = length => {
  * is a sorted array of unique values present in that column across all items. This is helpful for
  * column values the user may want to select from, such as `Reference` and `SupportReference`
  *
- * @param {Array.<string>} columnNames - Array of column names for which to generate filter options.
- * @param {Array.<TSVRow>} allItems - Array of TSVRows containing TSV data
- *
- * @returns {Object.<string, string[]>} - An object where each key is a column name and the value is a sorted array of unique values for that column.
+ * @returns An object where each key is a column name and the value is a sorted array of unique values for that column.
  *
  * @example
  *   const columnNames = ["Chapter", "Verse"];
@@ -245,8 +222,11 @@ const randomId = length => {
  *   const result = getColumnsFilterOptions(columnNames, allItems);
  *     Outputs: { "Chapter": ["1", "2"], "Verse": ["1", "2"] }
  */
-export const getColumnsFilterOptions = (columnNames, allItems) => {
-  const columnsFilterOptions = {}
+export const getColumnsFilterOptions = (
+  columnNames: string[],
+  allItems: TSVRow[]
+): { [column: string]: string[] } => {
+  const columnsFilterOptions: { [column: string]: Set<string> } = {}
 
   allItems.forEach(item => {
     columnNames.forEach(columnName => {
@@ -256,25 +236,24 @@ export const getColumnsFilterOptions = (columnNames, allItems) => {
           columnsFilterOptions[columnName] = new Set()
         }
 
-        if (!columnsFilterOptions[columnName].has(value)) {
-          columnsFilterOptions[columnName].add(value)
-        }
+        columnsFilterOptions[columnName].add(value)
       }
     })
   })
 
+  const result: { [column: string]: string[] } = {}
   columnNames.forEach(columnName => {
     if (columnsFilterOptions[columnName]) {
-      columnsFilterOptions[columnName] = [
-        ...columnsFilterOptions[columnName],
-      ].sort(sortSKU) // sort chapters and verses
+      result[columnName] = Array.from(columnsFilterOptions[columnName]).sort(
+        sortSKU
+      )
     }
   })
 
-  return columnsFilterOptions
+  return result
 }
 
-function sortSKU(a, b) {
+function sortSKU(a: string, b: string): number {
   var aParts = a.split(':'),
     bParts = b.split(':'),
     partCount = aParts.length,

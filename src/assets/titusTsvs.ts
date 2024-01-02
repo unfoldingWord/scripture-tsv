@@ -1,4 +1,6 @@
-export const titusTsvs = {
+import type { ScriptureTSV } from '../core/TsvTypes'
+
+export const titusTsvs: ScriptureTSV = {
   1: {
     1: [
       {
