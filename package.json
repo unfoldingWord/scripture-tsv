@@ -1,6 +1,6 @@
 {
   "name": "scripture-tsv",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": "https://github.com/unfoldingWord/scripture-tsv.git",
   "main": "./dist/main.es.js",
   "module": "./dist/main.cs.js",

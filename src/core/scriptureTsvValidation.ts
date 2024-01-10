@@ -36,7 +36,7 @@ export function isValidScriptureTSV(obj: any): obj is ScriptureTSV {
     // Check each verse in the chapter
     for (const verse in verses) {
       const verseNum = parseInt(verse, 10)
-      if (verse !== 'intro' && isNaN(verseNum)) {
+      if (verse !== 'intro' && verse !== 'front' && isNaN(verseNum)) {
         return false
       }
 
@@ -71,10 +71,14 @@ export function isValidTSVRow(
   }
 
   // Validate ReferenceString (format 'chapter:verse' or 'chapter:verseStart-verseEnd')
+  const shouldCheckInBook = (ref: string) =>
+    !!bookId && !ref.includes('front') && !ref.includes('intro')
+
   if (
     typeof row.Reference !== 'string' ||
     !parseReferenceToList(row.Reference).length ||
-    (!!bookId && !ReferenceUtils.isRefInBook(row.Reference, bookId))
+    (shouldCheckInBook(row.Reference) &&
+      !ReferenceUtils.isRefInBook(row.Reference, bookId))
   ) {
     return false
   }

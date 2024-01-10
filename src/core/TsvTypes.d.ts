@@ -26,7 +26,7 @@ export type ItemIndex = number
 /**
  * A string in the format 'chapter:verse'.
  * 'chapter' can be a number or the word 'front'
- * 'verse'' can be a number, the word 'intro', or a verse range (verseStart-verseEnd)
+ * 'verse'' can be a number, the word 'intro', the word 'front', or a verse range (verseStart-verseEnd)
  * Can be a reference range (i.e 1:2-3)
  * Can be multiple references (i.e 2:3;4:23)
  */

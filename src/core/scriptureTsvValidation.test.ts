@@ -40,6 +40,13 @@ describe('scriptureTsvValidation', () => {
       expect(isValidScriptureTSV(scriptureTSV)).toBe(true)
     })
 
+    it('should return true for special verse keys like "front"', () => {
+      const scriptureTSV: ScriptureTSV = {
+        3: { front: [{ Reference: '3:front', ID: 'a123' }] },
+      }
+      expect(isValidScriptureTSV(scriptureTSV)).toBe(true)
+    })
+
     it('should return true for valid ScriptureTSV objects', () => {
       const validScriptureTSV: ScriptureTSV = {
         1: {
@@ -108,6 +115,12 @@ describe('scriptureTsvValidation', () => {
         true
       )
       expect(isValidTSVRow({ Reference: '2:3;4:23', ID: 'c345' }, bookId)).toBe(
+        true
+      )
+    })
+
+    it('should return true if verse is front', () => {
+      expect(isValidTSVRow({ Reference: '3:front', ID: 'z123' }, bookId)).toBe(
         true
       )
     })
