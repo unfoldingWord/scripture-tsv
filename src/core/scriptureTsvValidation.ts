@@ -1,4 +1,6 @@
 import { parseReferenceToList } from 'bible-reference-range'
+// @ts-ignore
+import { ReferenceUtils } from 'bible-reference-rcl'
 import {
   ScriptureTSV,
   TSVRow,
@@ -6,6 +8,7 @@ import {
   ChapterNumString,
   VerseNum,
   VerseNumString,
+  BookId,
 } from './TsvTypes'
 
 /**
@@ -59,7 +62,10 @@ export function isValidScriptureTSV(obj: any): obj is ScriptureTSV {
  *
  * @returns True if the object is a TSVRow, false otherwise.
  */
-export function isValidTSVRow(row: any): row is TSVRow {
+export function isValidTSVRow(
+  row: any,
+  bookId: BookId | null = null
+): row is TSVRow {
   if (typeof row !== 'object' || row === null) {
     return false
   }
@@ -67,7 +73,8 @@ export function isValidTSVRow(row: any): row is TSVRow {
   // Validate ReferenceString (format 'chapter:verse' or 'chapter:verseStart-verseEnd')
   if (
     typeof row.Reference !== 'string' ||
-    !parseReferenceToList(row.Reference).length
+    !parseReferenceToList(row.Reference).length ||
+    (!!bookId && !ReferenceUtils.isRefInBook(row.Reference, bookId))
   ) {
     return false
   }

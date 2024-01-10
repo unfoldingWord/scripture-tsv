@@ -1,7 +1,11 @@
 import parser from 'tsv'
 import cloneDeep from 'lodash.clonedeep'
 import flattenObject from './flattenTsvObject'
-import { isValidScriptureTSV, isValidTSVRow, doesItemIndexExistInTsvs } from './scriptureTsvValidation'
+import {
+  isValidScriptureTSV,
+  isValidTSVRow,
+  doesItemIndexExistInTsvs,
+} from './scriptureTsvValidation'
 import {
   ScriptureTSV,
   TSVRow,
@@ -11,6 +15,7 @@ import {
   UpdatedRowValue,
   ReferenceRangeOperation,
   ReferenceRangeTag,
+  BookId,
 } from './TsvTypes'
 
 /**
@@ -29,12 +34,13 @@ export const addTsvRow = (
   newItem: TSVRow,
   chapter: ChapterNum,
   verse: VerseNum,
-  itemIndex: ItemIndex
+  itemIndex: ItemIndex,
+  bookId: BookId
 ): ScriptureTSV => {
   if (!isValidScriptureTSV(tsvs)) {
     throw new Error('Invalid Scripture TSV input!')
   }
-  if (!isValidTSVRow(newItem)) {
+  if (!isValidTSVRow(newItem, bookId)) {
     throw new Error('Invalid new row input!')
   }
 
@@ -141,11 +147,10 @@ const modifyTsvReferenceRange = (
     const tsvChapter = tsvs[chapter]
     const updatedChapter = Object.keys(tsvChapter).reduce(
       (accChapter, verse) => {
-        return { ...accChapter, [verse]: operation(
-          tsvChapter[verse],
-          refRangeTag,
-          ...rest
-        )}
+        return {
+          ...accChapter,
+          [verse]: operation(tsvChapter[verse], refRangeTag, ...rest),
+        }
       },
       {}
     )
@@ -160,7 +165,11 @@ const modifyTsvReferenceRange = (
  *
  * @returns {Array} An updated array of verse objects with the specified reference range updated.
  */
-const updateRefRange: ReferenceRangeOperation = (verseArray, refRangeTag, tsvItem) =>
+const updateRefRange: ReferenceRangeOperation = (
+  verseArray,
+  refRangeTag,
+  tsvItem
+) =>
   verseArray.map(note =>
     note?._referenceRange === refRangeTag ? tsvItem : note
   )
@@ -172,7 +181,6 @@ const updateRefRange: ReferenceRangeOperation = (verseArray, refRangeTag, tsvIte
  */
 const deleteRefRange: ReferenceRangeOperation = (verseArray, refRangeTag) =>
   verseArray.filter(note => note?._referenceRange !== refRangeTag)
-
 
 /**
  * @description Moves a tsv item in a chapter, verse to another index in the tsv items array

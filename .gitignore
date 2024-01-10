@@ -12,6 +12,8 @@ dist
 dist-ssr
 storybook-static
 *.local
+.yalc
+yalc.lock
 
 # Editor directories and files
 .vscode/*

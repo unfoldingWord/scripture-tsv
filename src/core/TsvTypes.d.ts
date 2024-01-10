@@ -33,6 +33,13 @@ export type ItemIndex = number
 export type ReferenceString = string
 
 /**
+ * A string in the format of a Bible book ID, which is a three character string
+ *
+ * @example 'gen', 'jhn', 'php'
+ */
+export type BookId = string
+
+/**
  * An object representing a reference to a chapter and verse.
  */
 export interface TSVReference {

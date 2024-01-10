@@ -54,11 +54,11 @@ const AddTsvRow: React.FC = () => {
         const { chapter: inputChapter, verse: inputVerse } =
           getChapterVerse(Reference)
         if (inputChapter !== chapter || inputVerse !== verse) {
-          const newTsvs = onTsvAdd(row, inputChapter, inputVerse, 0)
+          const newTsvs = onTsvAdd(row, inputChapter, inputVerse, 'tit', 0)
           newTsvs && console.log(tsvsObjectToFileString(newTsvs))
           return
         }
-        const newTsvs = onTsvAdd(row, chapter, verse, itemIndex)
+        const newTsvs = onTsvAdd(row, chapter, verse, 'tit', itemIndex)
         newTsvs && console.log(tsvsObjectToFileString(newTsvs))
       } catch (error) {
         console.error('Error while adding new TSV Row:', error)

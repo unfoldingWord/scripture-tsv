@@ -16,6 +16,7 @@ import {
   VerseNum,
   SetContentFunction,
   TSVRow,
+  BookId,
 } from '../TsvTypes'
 
 interface TSVContentAndReference {
@@ -32,6 +33,7 @@ interface TSVDataOperations {
     newItem: TSVRow,
     chapter: ChapterNum,
     verse: VerseNum,
+    bookId: BookId,
     itemIndex?: ItemIndex
   ) => ScriptureTSV | null
   onTsvDelete: (itemIndex?: ItemIndex) => ScriptureTSV | null
@@ -91,10 +93,18 @@ export default function useTsvData({
     newItem: TSVRow,
     chapter: ChapterNum,
     verse: VerseNum,
+    bookId: BookId,
     itemIndex: ItemIndex = defaultItemIndex
   ): ScriptureTSV | null {
     if (tsvsState) {
-      const newTsvs = addTsvRow(tsvsState, newItem, chapter, verse, itemIndex)
+      const newTsvs = addTsvRow(
+        tsvsState,
+        newItem,
+        chapter,
+        verse,
+        itemIndex,
+        bookId
+      )
       setTsvsState(newTsvs)
       return newTsvs
     }

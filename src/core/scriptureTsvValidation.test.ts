@@ -63,21 +63,24 @@ describe('scriptureTsvValidation', () => {
   })
 
   describe('isValidTSVRow', () => {
+    const bookId = 'gen'
     it('should return false for non-object types', () => {
-      expect(isValidTSVRow(null)).toBe(false)
-      expect(isValidTSVRow(undefined)).toBe(false)
+      expect(isValidTSVRow(null, bookId)).toBe(false)
+      expect(isValidTSVRow(undefined, bookId)).toBe(false)
     })
 
     it('should return false for invalid TSVRow objects', () => {
-      expect(isValidTSVRow({ Reference: '1:1', ID: '1234' })).toBe(false) // ID should start with a letter
+      expect(isValidTSVRow({ Reference: '1:1', ID: '1234' }, bookId)).toBe(
+        false
+      ) // ID should start with a letter
     })
 
     it('should return false for objects without a Reference property', () => {
-      expect(isValidTSVRow({ ID: 'a123' })).toBe(false)
+      expect(isValidTSVRow({ ID: 'a123' }, bookId)).toBe(false)
     })
 
     it('should return false for objects without an ID property', () => {
-      expect(isValidTSVRow({ Reference: '1:1' })).toBe(false)
+      expect(isValidTSVRow({ Reference: '1:1' }, bookId)).toBe(false)
     })
 
     it('should return false for objects with invalid ID format', () => {
@@ -85,7 +88,7 @@ describe('scriptureTsvValidation', () => {
         { Reference: '1:1', ID: '1234' }, // ID should start with a letter
         { Reference: '2:2', ID: 'abcd5' }, // ID should be exactly four characters
       ]
-      invalidRows.forEach(row => expect(isValidTSVRow(row)).toBe(false))
+      invalidRows.forEach(row => expect(isValidTSVRow(row, bookId)).toBe(false))
     })
 
     it('should return false for objects with additional properties of wrong types', () => {
@@ -94,13 +97,19 @@ describe('scriptureTsvValidation', () => {
         ID: 'a123',
         ExtraProp: 123, // ExtraProp should be a string
       }
-      expect(isValidTSVRow(invalidRow)).toBe(false)
+      expect(isValidTSVRow(invalidRow, bookId)).toBe(false)
     })
 
     it('should validate ReferenceString formats', () => {
-      expect(isValidTSVRow({ Reference: 'front:intro', ID: 'a123' })).toBe(true)
-      expect(isValidTSVRow({ Reference: '1:2-3', ID: 'b234' })).toBe(true)
-      expect(isValidTSVRow({ Reference: '2:3;4:23', ID: 'c345' })).toBe(true)
+      expect(
+        isValidTSVRow({ Reference: 'front:intro', ID: 'a123' }, bookId)
+      ).toBe(true)
+      expect(isValidTSVRow({ Reference: '1:2-3', ID: 'b234' }, bookId)).toBe(
+        true
+      )
+      expect(isValidTSVRow({ Reference: '2:3;4:23', ID: 'c345' }, bookId)).toBe(
+        true
+      )
     })
 
     it('should return true for valid TSVRow objects', () => {
@@ -108,7 +117,7 @@ describe('scriptureTsvValidation', () => {
         Reference: '1:1',
         ID: 'a123',
       }
-      expect(isValidTSVRow(validTSVRow)).toBe(true)
+      expect(isValidTSVRow(validTSVRow, bookId)).toBe(true)
     })
 
     it('should return true for TSVRow objects with multiple additional string fields', () => {
@@ -119,7 +128,15 @@ describe('scriptureTsvValidation', () => {
         Field2: 'Text2',
         Field3: 'Text3',
       }
-      expect(isValidTSVRow(validRow)).toBe(true)
+      expect(isValidTSVRow(validRow, bookId)).toBe(true)
+    })
+
+    it('should return false for reference range that does not exist within book', () => {
+      const invalidRow: Partial<TSVRow> = {
+        Reference: '45:1-70:99',
+        ID: 'a123',
+      }
+      expect(isValidTSVRow(invalidRow, bookId)).toBe(false)
     })
   })
 
