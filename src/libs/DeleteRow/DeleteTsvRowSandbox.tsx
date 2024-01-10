@@ -20,7 +20,7 @@ const chapter: ChapterNum = 1
 const verse: VerseNum = 1
 const itemIndex: ItemIndex = 0
 
-const DeleteTsvRow: React.FC = () => {
+const DeleteTsvRowSandbox: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const { getTsvRow, onTsvDelete } = useTsvData({
@@ -52,4 +52,4 @@ const DeleteTsvRow: React.FC = () => {
   )
 }
 
-export default DeleteTsvRow
+export default DeleteTsvRowSandbox

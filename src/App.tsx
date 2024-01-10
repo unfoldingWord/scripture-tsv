@@ -1,11 +1,11 @@
 import React from 'react'
 import './App.css'
-import AddTsvRow from './libs/AddRow/AddTsvRow'
+import AddTsvRowSandbox from './libs/AddRow/AddTsvRowSandbox'
 
 function App() {
   return (
     <>
-      <AddTsvRow />
+      <AddTsvRowSandbox />
     </>
   )
 }

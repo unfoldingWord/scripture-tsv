@@ -32,7 +32,7 @@ const columnsFilter: string[] = [
   'SupportReference',
 ]
 
-const AddTsvRow: React.FC = () => {
+const AddTsvRowSandbox: React.FC = () => {
   const { onTsvAdd } = useTsvData({
     tsvs: titusTsvs,
     chapter,
@@ -110,4 +110,4 @@ const AddTsvRow: React.FC = () => {
   )
 }
 
-export default AddTsvRow
+export default AddTsvRowSandbox
