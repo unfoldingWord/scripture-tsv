@@ -1,6 +1,6 @@
 {
   "name": "scripture-tsv",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "repository": "https://github.com/unfoldingWord/scripture-tsv.git",
   "main": "./dist/main.es.js",
   "module": "./dist/main.cs.js",
@@ -24,7 +24,9 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "dompurify": "^3.0.8",
     "lodash.clonedeep": "^4.5.0",
+    "marked": "^11.2.0",
     "tsv": "^0.2.0",
     "use-deep-compare-effect": "^1.8.1"
   },
@@ -59,6 +61,7 @@
     "@storybook/react": "^7.6.6",
     "@storybook/react-vite": "^7.6.6",
     "@storybook/test": "^7.6.6",
+    "@types/dompurify": "^3.0.5",
     "@types/jest": "^29.5.11",
     "@types/lodash.clonedeep": "^4.5.8",
     "@types/node": "^20.10.5",
