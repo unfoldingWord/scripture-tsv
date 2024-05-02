@@ -7,7 +7,7 @@ import {
   ChapterNum,
   VerseNum,
   TSVRow,
-} from '../../../core/TsvTypes'
+} from '../../../types/TsvTypes'
 
 interface UseAddTsvProps {
   tsvs: ScriptureTSV

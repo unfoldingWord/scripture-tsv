@@ -4,7 +4,7 @@ import useTsvData from '../../core/hooks/useTsvData'
 import DeleteRowButton from './components/DeleteRowButton'
 import DeleteRowDialog from './components/DeleteRowDialog'
 import { titusTsvs } from '../../assets/titusTsvs'
-import { ChapterNum, VerseNum, ItemIndex } from '../../core/TsvTypes'
+import { ChapterNum, VerseNum, ItemIndex } from '../../types/TsvTypes'
 
 /**
  * @description This file is meant to act as a sandbox to display the content

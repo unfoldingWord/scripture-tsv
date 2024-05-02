@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
+    "target": "ES6",
+    "module": "ES6",
     "outDir": "./dist",
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "types": ["vite/client", "node", "jest"],
     "lib": ["dom", "dom.iterable"],
     "allowJs": true,
@@ -14,13 +16,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "react",
     "baseUrl": "./",
     "paths": {
-	"~/*": ["src/*"]
+      "*": ["src/*"]
     }
   },
-  "include": ["./src"],
-  "exclude": ["node_modules", "**/*.test.ts", "dist"] 
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts", "dist"]
 }

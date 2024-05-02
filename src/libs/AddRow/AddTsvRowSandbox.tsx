@@ -8,7 +8,7 @@ import AddRowForm from './components/AddRowForm'
 import { titusTsvs } from '../../assets/titusTsvs'
 import { getChapterVerse } from '../../core/tsvRowUtils'
 import { tsvsObjectToFileString } from '../../core/tsvDataActions'
-import { TSVRow, ChapterNum, VerseNum, ItemIndex } from '../../core/TsvTypes'
+import { TSVRow, ChapterNum, VerseNum, ItemIndex } from '../../types/TsvTypes'
 
 /**
  * @description This file is meant to act as a sandbox to display the content

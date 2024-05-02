@@ -4,7 +4,7 @@ import {
   doesChapterVerseExistInTsvs,
   doesItemIndexExistInTsvs,
 } from './scriptureTsvValidation'
-import { ScriptureTSV, TSVRow } from './TsvTypes'
+import { ScriptureTSV, TSVRow } from '../types/TsvTypes'
 
 import { titusTsvs } from '../assets/titusTsvs'
 

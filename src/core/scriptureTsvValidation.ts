@@ -9,7 +9,7 @@ import {
   VerseNum,
   VerseNumString,
   BookId,
-} from './TsvTypes'
+} from '../types/TsvTypes'
 
 /**
  * Validates if an object is of type ScriptureTSV.

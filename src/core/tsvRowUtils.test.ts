@@ -5,7 +5,7 @@ import {
   ScriptureTSV,
   TSVRow,
   VerseNum,
-} from './TsvTypes'
+} from '../types/TsvTypes'
 import {
   getChapterVerse,
   calculateRowsLengthIndex,
