@@ -16,7 +16,7 @@ import {
   ReferenceRangeOperation,
   ReferenceRangeTag,
   BookId,
-} from './TsvTypes'
+} from '../types/TsvTypes'
 
 /**
  * @module

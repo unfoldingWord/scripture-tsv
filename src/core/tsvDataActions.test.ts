@@ -7,7 +7,7 @@ import {
   removeReferenceRangeDuplicates,
   tsvsObjectToFileString,
 } from './tsvDataActions'
-import { ScriptureTSV, TSVRow, UpdatedRowValue } from './TsvTypes'
+import { ScriptureTSV, TSVRow, UpdatedRowValue } from '../types/TsvTypes'
 
 describe('TSV Data Actions', () => {
   describe('addTsvRow', () => {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { TextField, Autocomplete } from '@mui/material'
-import { TSVRow } from '../../../core/TsvTypes'
+import { TSVRow } from '../../../types/TsvTypes'
 
 interface AddRowFormProps {
   newRow: TSVRow

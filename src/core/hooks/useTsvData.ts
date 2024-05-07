@@ -17,7 +17,7 @@ import {
   SetContentFunction,
   TSVRow,
   BookId,
-} from '../TsvTypes'
+} from '../../types/TsvTypes'
 
 interface TSVContentAndReference {
   tsvs: ScriptureTSV

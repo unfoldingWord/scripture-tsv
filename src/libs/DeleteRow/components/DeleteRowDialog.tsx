@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 
 import { isValidTSVRow } from '../../../core/scriptureTsvValidation'
-import { TSVRow } from '../../../core/TsvTypes'
+import { TSVRow } from '../../../types/TsvTypes'
 
 interface DeleteRowDialogProps {
   title?: string

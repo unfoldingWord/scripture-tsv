@@ -11,7 +11,7 @@ import {
   IDLength,
   ChapterNum,
   VerseNum,
-} from './TsvTypes'
+} from '../types/TsvTypes'
 
 /**
  * Extracts chapter and verse from string in a chapter:verse format.
